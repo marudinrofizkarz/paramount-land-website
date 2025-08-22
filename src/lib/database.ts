@@ -1,9 +1,21 @@
 import { createClient } from "@libsql/client";
+import { DATABASE_CONFIG } from "./env-config";
+
+// Validate database configuration
+if (!DATABASE_CONFIG.url && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "❌ TURSO_DATABASE_URL is required for production deployment"
+  );
+}
+
+if (!DATABASE_CONFIG.authToken && process.env.NODE_ENV === "production") {
+  throw new Error("❌ TURSO_AUTH_TOKEN is required for production deployment");
+}
 
 // Buat koneksi ke database Turso
 const db = createClient({
-  url: process.env.DATABASE_URL as string,
-  authToken: process.env.DATABASE_AUTH_TOKEN as string,
+  url: DATABASE_CONFIG.url,
+  authToken: DATABASE_CONFIG.authToken,
 });
 
 export default db;

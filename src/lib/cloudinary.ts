@@ -1,9 +1,29 @@
 import { v2 as cloudinary } from "cloudinary";
+import { CLOUDINARY_CONFIG } from "./env-config";
+
+// Validate Cloudinary configuration
+if (!CLOUDINARY_CONFIG.cloudName && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "❌ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is required for production deployment"
+  );
+}
+
+if (!CLOUDINARY_CONFIG.apiKey && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "❌ CLOUDINARY_API_KEY is required for production deployment"
+  );
+}
+
+if (!CLOUDINARY_CONFIG.apiSecret && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "❌ CLOUDINARY_API_SECRET is required for production deployment"
+  );
+}
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: CLOUDINARY_CONFIG.cloudName,
+  api_key: CLOUDINARY_CONFIG.apiKey,
+  api_secret: CLOUDINARY_CONFIG.apiSecret,
 });
 
 export { cloudinary };

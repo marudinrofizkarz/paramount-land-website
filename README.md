@@ -23,6 +23,7 @@ This project is built with a cutting-edge technology stack:
 ## 🌟 Features
 
 ### **Public Website:**
+
 - 📱 **Responsive Design** - Mobile-first approach
 - 🎨 **Hero Slider** - Dynamic content management
 - 🏘️ **Project Showcase** - Detailed property listings
@@ -33,6 +34,7 @@ This project is built with a cutting-edge technology stack:
 - 📧 **Contact Forms** - Lead generation system
 
 ### **Admin Dashboard:**
+
 - 🔐 **Secure Authentication** - Clerk integration
 - 🏗️ **Project Management** - Complete CRUD operations
 - 🏠 **Unit Management** - Individual property units
@@ -43,6 +45,7 @@ This project is built with a cutting-edge technology stack:
 - 📱 **Mobile Admin** - Responsive dashboard
 
 ### **Technical Features:**
+
 - ⚡ **Performance Optimized** - Next.js optimizations
 - 🔒 **Security Headers** - OWASP compliance
 - 📱 **Progressive Web App** - PWA ready
@@ -82,22 +85,40 @@ This project is built with a cutting-edge technology stack:
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/marudinrofizkarz/paramount-land-website.git
    cd paramount-land-website
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables:**
+
+   **Option 1: Interactive Setup (Recommended)**
+
+   ```bash
+   npm run setup:env
+   ```
+
+   **Option 2: Manual Setup**
+
    ```bash
    cp .env.example .env.local
    ```
 
+   **Validate your configuration:**
+
+   ```bash
+   npm run validate:env
+   ```
+
 4. **Configure your `.env.local`:**
+
    ```env
    # Database
    TURSO_DATABASE_URL=your_turso_database_url
@@ -125,23 +146,57 @@ Visit [http://localhost:9003](http://localhost:9003) to view the application.
 
 ## 📦 Deployment
 
-### Deploy to Vercel
+### 🚨 **CRITICAL: Environment Variables Required**
 
-1. **Push to GitHub:**
+**Before deploying, you MUST set up environment variables!** See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete instructions.
+
+The deployment will fail with `URL_INVALID: The URL 'undefined'` error if environment variables are not properly configured.
+
+### Quick Setup:
+
+1. **Set up your services:**
+
+   - [Turso Database](https://turso.tech) - Get database URL and auth token
+   - [Clerk Auth](https://clerk.com) - Get publishable key and secret key
+   - [Cloudinary](https://cloudinary.com) - Get cloud name and API credentials
+
+2. **Deploy to Vercel:**
+
+   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/marudinrofizkarz/paramount-land-website)
+
+   Or manually:
+
    ```bash
-   git add .
-   git commit -m "Ready for deployment"
+   # Push to GitHub (if not done already)
    git push origin main
+
+   # Deploy via Vercel CLI
+   npx vercel
    ```
 
-2. **Connect to Vercel:**
-   - Visit [vercel.com](https://vercel.com/)
-   - Import your GitHub repository
-   - Configure environment variables
-   - Deploy!
+3. **Configure Environment Variables in Vercel:**
+   - Go to your Vercel project → Settings → Environment Variables
+   - Add all required variables (see [DEPLOYMENT.md](./DEPLOYMENT.md))
+   - Redeploy the project
 
-3. **Environment Variables in Vercel:**
-   Add all the variables from `.env.local` to your Vercel project settings.
+### 🔧 **Required Environment Variables:**
+
+```env
+# Database (CRITICAL - deployment will fail without this)
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your_turso_token
+
+# Authentication (CRITICAL)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key
+CLERK_SECRET_KEY=sk_test_your_secret
+
+# File Storage (CRITICAL)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+**📋 Complete list:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for all environment variables and setup instructions.
 
 ## 🛡️ Security Features
 

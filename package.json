@@ -11,7 +11,10 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "migrate:kanban": "node scripts/migrate-kanban.js"
+    "migrate:kanban": "node scripts/migrate-kanban.js",
+    "validate:env": "node scripts/validate-environment.js",
+    "setup:env": "node scripts/setup-environment.js",
+    "prebuild": "npm run validate:env"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.28.1",

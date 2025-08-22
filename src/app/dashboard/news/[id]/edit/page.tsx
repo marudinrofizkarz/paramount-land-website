@@ -1,36 +1,37 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CLOUDINARY_CONFIG } from "@/lib/env-config";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { getNewsById, updateNews } from '@/lib/news-actions';
-import { IconArrowLeft } from '@tabler/icons-react';
-import Link from 'next/link';
-import Image from 'next/image';
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { getNewsById, updateNews } from "@/lib/news-actions";
+import { IconArrowLeft } from "@tabler/icons-react";
+import Link from "next/link";
+import Image from "next/image";
 
 // Rich Text Editor imports
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Heading from '@tiptap/extension-heading';
-import { Link as TiptapLink } from '@tiptap/extension-link';
-import { Image as TiptapImage } from '@tiptap/extension-image';
-import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
-import { TextStyle } from '@tiptap/extension-text-style';
-import Color from '@tiptap/extension-color';
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Heading from "@tiptap/extension-heading";
+import { Link as TiptapLink } from "@tiptap/extension-link";
+import { Image as TiptapImage } from "@tiptap/extension-image";
+import TextAlign from "@tiptap/extension-text-align";
+import Underline from "@tiptap/extension-underline";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
 
 // Icons for editor toolbar
 import {
@@ -44,33 +45,42 @@ import {
   ListOrdered,
   Upload,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 const categories = [
-  'Company News',
-  'Development',
-  'Awards',
-  'Sustainability',
-  'Community',
-  'Technology',
-  'Investment',
+  "Company News",
+  "Development",
+  "Awards",
+  "Sustainability",
+  "Community",
+  "Technology",
+  "Investment",
 ];
 
 const bgColors = [
-  { value: 'bg-gradient-to-br from-primary/20 to-primary/5', label: 'Primary' },
-  { value: 'bg-gradient-to-br from-blue-500/20 to-blue-500/5', label: 'Blue' },
-  { value: 'bg-gradient-to-br from-green-500/20 to-green-500/5', label: 'Green' },
-  { value: 'bg-gradient-to-br from-yellow-500/20 to-yellow-500/5', label: 'Yellow' },
-  { value: 'bg-gradient-to-br from-red-500/20 to-red-500/5', label: 'Red' },
-  { value: 'bg-gradient-to-br from-purple-500/20 to-purple-500/5', label: 'Purple' },
+  { value: "bg-gradient-to-br from-primary/20 to-primary/5", label: "Primary" },
+  { value: "bg-gradient-to-br from-blue-500/20 to-blue-500/5", label: "Blue" },
+  {
+    value: "bg-gradient-to-br from-green-500/20 to-green-500/5",
+    label: "Green",
+  },
+  {
+    value: "bg-gradient-to-br from-yellow-500/20 to-yellow-500/5",
+    label: "Yellow",
+  },
+  { value: "bg-gradient-to-br from-red-500/20 to-red-500/5", label: "Red" },
+  {
+    value: "bg-gradient-to-br from-purple-500/20 to-purple-500/5",
+    label: "Purple",
+  },
 ];
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 export default function EditNewsPage() {
@@ -78,19 +88,19 @@ export default function EditNewsPage() {
   const params = useParams();
   const { toast } = useToast();
   const newsId = params.id as string;
-  
+
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [imageUploading, setImageUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
-    title: '',
-    slug: '',
-    description: '',
-    content: '',
-    category: '',
-    featured_image: '',
-    bg_color: 'bg-gradient-to-br from-primary/20 to-primary/5',
+    title: "",
+    slug: "",
+    description: "",
+    content: "",
+    category: "",
+    featured_image: "",
+    bg_color: "bg-gradient-to-br from-primary/20 to-primary/5",
     is_published: false,
   });
 
@@ -101,16 +111,16 @@ export default function EditNewsPage() {
       Heading.configure({ levels: [1, 2, 3] }),
       TiptapLink.configure({ openOnClick: false }),
       TiptapImage,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       Underline,
       TextStyle,
       Color,
     ],
-    content: '<p>Loading...</p>',
+    content: "<p>Loading...</p>",
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setFormData(prev => ({ ...prev, content: html }));
+      setFormData((prev) => ({ ...prev, content: html }));
     },
   });
 
@@ -125,7 +135,7 @@ export default function EditNewsPage() {
           variant="ghost"
           size="sm"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={editor.isActive('bold') ? 'bg-muted' : ''}
+          className={editor.isActive("bold") ? "bg-muted" : ""}
         >
           <Bold className="h-4 w-4" />
         </Button>
@@ -134,7 +144,7 @@ export default function EditNewsPage() {
           variant="ghost"
           size="sm"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={editor.isActive('italic') ? 'bg-muted' : ''}
+          className={editor.isActive("italic") ? "bg-muted" : ""}
         >
           <Italic className="h-4 w-4" />
         </Button>
@@ -143,7 +153,7 @@ export default function EditNewsPage() {
           variant="ghost"
           size="sm"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={editor.isActive('underline') ? 'bg-muted' : ''}
+          className={editor.isActive("underline") ? "bg-muted" : ""}
         >
           <UnderlineIcon className="h-4 w-4" />
         </Button>
@@ -152,8 +162,8 @@ export default function EditNewsPage() {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          className={editor.isActive({ textAlign: 'left' }) ? 'bg-muted' : ''}
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          className={editor.isActive({ textAlign: "left" }) ? "bg-muted" : ""}
         >
           <AlignLeft className="h-4 w-4" />
         </Button>
@@ -161,8 +171,8 @@ export default function EditNewsPage() {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          className={editor.isActive({ textAlign: 'center' }) ? 'bg-muted' : ''}
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          className={editor.isActive({ textAlign: "center" }) ? "bg-muted" : ""}
         >
           <AlignCenter className="h-4 w-4" />
         </Button>
@@ -170,8 +180,8 @@ export default function EditNewsPage() {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          className={editor.isActive({ textAlign: 'right' }) ? 'bg-muted' : ''}
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          className={editor.isActive({ textAlign: "right" }) ? "bg-muted" : ""}
         >
           <AlignRight className="h-4 w-4" />
         </Button>
@@ -181,7 +191,7 @@ export default function EditNewsPage() {
           variant="ghost"
           size="sm"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={editor.isActive('bulletList') ? 'bg-muted' : ''}
+          className={editor.isActive("bulletList") ? "bg-muted" : ""}
         >
           <List className="h-4 w-4" />
         </Button>
@@ -190,7 +200,7 @@ export default function EditNewsPage() {
           variant="ghost"
           size="sm"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={editor.isActive('orderedList') ? 'bg-muted' : ''}
+          className={editor.isActive("orderedList") ? "bg-muted" : ""}
         >
           <ListOrdered className="h-4 w-4" />
         </Button>
@@ -208,32 +218,34 @@ export default function EditNewsPage() {
             title: response.data.title,
             slug: response.data.slug,
             description: response.data.description,
-            content: response.data.content || '',
+            content: response.data.content || "",
             category: response.data.category,
-            featured_image: response.data.featured_image || '',
-            bg_color: response.data.bg_color || 'bg-gradient-to-br from-primary/20 to-primary/5',
+            featured_image: response.data.featured_image || "",
+            bg_color:
+              response.data.bg_color ||
+              "bg-gradient-to-br from-primary/20 to-primary/5",
             is_published: response.data.is_published,
           };
           setFormData(newsData);
-          
+
           // Set editor content
           if (editor && newsData.content) {
             editor.commands.setContent(newsData.content);
           }
         } else {
           toast({
-            title: 'Error',
-            description: 'News not found',
-            variant: 'destructive',
+            title: "Error",
+            description: "News not found",
+            variant: "destructive",
           });
-          router.push('/dashboard/news');
+          router.push("/dashboard/news");
         }
       } catch (error) {
-        console.error('Error fetching news:', error);
+        console.error("Error fetching news:", error);
         toast({
-          title: 'Error',
-          description: 'Failed to load news data',
-          variant: 'destructive',
+          title: "Error",
+          description: "Failed to load news data",
+          variant: "destructive",
         });
       } finally {
         setPageLoading(false);
@@ -246,7 +258,7 @@ export default function EditNewsPage() {
   }, [newsId, editor, router, toast]);
 
   const handleTitleChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       title: value,
       slug: slugify(value),
@@ -260,43 +272,46 @@ export default function EditNewsPage() {
     setImageUploading(true);
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'paramount-land'); // Gunakan preset yang baru dibuat
-      formData.append('folder', 'news');
+      formData.append("file", file);
+      formData.append("upload_preset", "paramount-land"); // Gunakan preset yang baru dibuat
+      formData.append("folder", "news");
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      
+      const cloudName = CLOUDINARY_CONFIG.cloudName;
+
       if (!cloudName) {
-        throw new Error('Cloudinary cloud name not configured');
+        throw new Error("Cloudinary cloud name not configured");
       }
 
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
 
       if (!response.ok) {
         const errorData = await response.text();
-        console.error('Cloudinary error:', errorData);
-        throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+        console.error("Cloudinary error:", errorData);
+        throw new Error(
+          `Upload failed: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
-      setFormData(prev => ({ ...prev, featured_image: data.secure_url }));
-      
+      setFormData((prev) => ({ ...prev, featured_image: data.secure_url }));
+
       toast({
-        title: 'Success',
-        description: 'Image uploaded successfully',
+        title: "Success",
+        description: "Image uploaded successfully",
       });
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to upload image',
-        variant: 'destructive',
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to upload image",
+        variant: "destructive",
       });
     } finally {
       setImageUploading(false);
@@ -307,11 +322,11 @@ export default function EditNewsPage() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         toast({
-          title: 'Error',
-          description: 'Please select an image file',
-          variant: 'destructive',
+          title: "Error",
+          description: "Please select an image file",
+          variant: "destructive",
         });
         return;
       }
@@ -319,9 +334,9 @@ export default function EditNewsPage() {
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast({
-          title: 'Error',
-          description: 'Image size must be less than 5MB',
-          variant: 'destructive',
+          title: "Error",
+          description: "Image size must be less than 5MB",
+          variant: "destructive",
         });
         return;
       }
@@ -331,20 +346,20 @@ export default function EditNewsPage() {
   };
 
   const removeImage = () => {
-    setFormData(prev => ({ ...prev, featured_image: '' }));
+    setFormData((prev) => ({ ...prev, featured_image: "" }));
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.description || !formData.category) {
       toast({
-        title: 'Error',
-        description: 'Please fill in all required fields',
-        variant: 'destructive',
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
       });
       return;
     }
@@ -359,23 +374,23 @@ export default function EditNewsPage() {
       const response = await updateNews(newsId, form);
       if (response.success) {
         toast({
-          title: 'Success',
-          description: 'News updated successfully',
+          title: "Success",
+          description: "News updated successfully",
         });
-        router.push('/dashboard/news');
+        router.push("/dashboard/news");
       } else {
         toast({
-          title: 'Error',
-          description: response.error || 'Failed to update news',
-          variant: 'destructive',
+          title: "Error",
+          description: response.error || "Failed to update news",
+          variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('Error updating news:', error);
+      console.error("Error updating news:", error);
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred',
-        variant: 'destructive',
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -428,7 +443,9 @@ export default function EditNewsPage() {
                 <Input
                   id="slug"
                   value={formData.slug}
-                  onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, slug: e.target.value }))
+                  }
                   placeholder="news-slug"
                   required
                 />
@@ -440,7 +457,12 @@ export default function EditNewsPage() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Brief description of the news"
                 rows={3}
                 required
@@ -463,7 +485,9 @@ export default function EditNewsPage() {
                 <Label htmlFor="category">Category *</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, category: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
@@ -482,7 +506,9 @@ export default function EditNewsPage() {
                 <Label htmlFor="bg_color">Background Color</Label>
                 <Select
                   value={formData.bg_color}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, bg_color: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, bg_color: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -510,7 +536,7 @@ export default function EditNewsPage() {
                     className="flex items-center gap-2"
                   >
                     <Upload className="h-4 w-4" />
-                    {imageUploading ? 'Uploading...' : 'Upload Image'}
+                    {imageUploading ? "Uploading..." : "Upload Image"}
                   </Button>
                   <input
                     ref={fileInputRef}
@@ -532,7 +558,7 @@ export default function EditNewsPage() {
                     </Button>
                   )}
                 </div>
-                
+
                 {formData.featured_image && (
                   <div className="relative w-full max-w-md">
                     <Image
@@ -551,8 +577,11 @@ export default function EditNewsPage() {
               <Checkbox
                 id="is_published"
                 checked={formData.is_published}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, is_published: checked as boolean }))
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    is_published: checked as boolean,
+                  }))
                 }
               />
               <Label htmlFor="is_published">Published</Label>
@@ -560,7 +589,7 @@ export default function EditNewsPage() {
 
             <div className="flex gap-4">
               <Button type="submit" disabled={loading || imageUploading}>
-                {loading ? 'Updating...' : 'Update News'}
+                {loading ? "Updating..." : "Update News"}
               </Button>
               <Button type="button" variant="outline" asChild>
                 <Link href="/dashboard/news">Cancel</Link>
