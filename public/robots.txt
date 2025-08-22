@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow admin dan halaman autentikasi
+Disallow: /dashboard/
+Disallow: /auth/
+
+# Sitemap
+Sitemap: https://www.paramount-land.com/sitemap.xml

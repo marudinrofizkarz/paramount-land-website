@@ -1,0 +1,75 @@
+"use client";
+
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+interface Tenant {
+  id: string;
+  name: string;
+}
+
+export function OrgSwitcher({
+  tenants,
+  defaultTenant,
+  onTenantSwitch,
+}: {
+  tenants: Tenant[];
+  defaultTenant: Tenant;
+  onTenantSwitch?: (tenantId: string) => void;
+}) {
+  const [selectedTenant, setSelectedTenant] = React.useState<
+    Tenant | undefined
+  >(defaultTenant || (tenants.length > 0 ? tenants[0] : undefined));
+  const { resolvedTheme } = useTheme();
+  const [logoSrc, setLogoSrc] = useState(
+    "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
+  );
+  const [isMounted, setIsMounted] = useState(false);
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      setLogoSrc(
+        resolvedTheme === "dark"
+          ? "https://res.cloudinary.com/diyyyav1i/image/upload/v1754036143/paramount-light_ta1kve.png"
+          : "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
+      );
+    }
+  }, [resolvedTheme, isMounted]);
+
+  if (!selectedTenant) {
+    return null;
+  }
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton size="lg">
+          <div className="flex items-center justify-center">
+            {isCollapsed ? (
+              <img
+                src="https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg"
+                alt="Paramount Land icon"
+                className="h-8 w-8 rounded-md"
+              />
+            ) : (
+              <img src={logoSrc} alt="Paramount Land logo" className="h-8" />
+            )}
+          </div>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
