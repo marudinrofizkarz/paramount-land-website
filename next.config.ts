@@ -10,10 +10,8 @@ const nextConfig: NextConfig = {
   },
   // Improve development performance
   reactStrictMode: false, // Set to true only for final testing
-  swcMinify: true,
   poweredByHeader: false,
   compress: true,
-  optimizeFonts: true,
   // Experimental optimizations (comment out if you encounter issues)
   experimental: {
     // optimizeCss: true,
