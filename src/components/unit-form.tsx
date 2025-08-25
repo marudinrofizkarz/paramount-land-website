@@ -38,6 +38,7 @@ import {
   Bed,
   Car,
   Shield,
+  Megaphone,
 } from "lucide-react";
 
 function SubmitButton() {
@@ -553,6 +554,33 @@ export function UnitForm({ projectSlug }: UnitFormProps) {
               </div>
               <p className="text-xs text-muted-foreground">
                 Add a YouTube video to showcase this unit virtually
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Promo Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Megaphone className="h-5 w-5" />
+              Promo Information
+            </CardTitle>
+            <CardDescription>
+              Special promotion details for this unit
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="promo">Promo Description</Label>
+              <Textarea
+                id="promo"
+                name="promo"
+                placeholder="Enter special promotion details here (e.g., 'Limited Time Offer: 10% Off', 'Free Interior Package', etc.)"
+                className="min-h-[80px]"
+              />
+              <p className="text-xs text-muted-foreground">
+                If left empty, no promo section will appear on the unit page
               </p>
             </div>
           </CardContent>

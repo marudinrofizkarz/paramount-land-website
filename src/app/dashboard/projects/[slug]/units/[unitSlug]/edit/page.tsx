@@ -80,6 +80,7 @@ import {
   Ruler,
   MapPin,
   Shield,
+  Megaphone,
 } from "lucide-react";
 
 export default function EditUnitPage() {
@@ -119,6 +120,7 @@ export default function EditUnitPage() {
   const [facilities, setFacilities] = useState<string[]>([]);
   const [customFacility, setCustomFacility] = useState("");
   const [status, setStatus] = useState("available");
+  const [promo, setPromo] = useState("");
 
   // Editor for rich text description
   const editor = useEditor({
@@ -277,6 +279,9 @@ export default function EditUnitPage() {
           }
         }
 
+        // Set promo text
+        setPromo(unitData.promo || "");
+
         // Set editor content
         if (editor && unitData.description) {
           editor.commands.setContent(unitData.description);
@@ -412,6 +417,9 @@ export default function EditUnitPage() {
       // Add facilities - ensure it's properly formatted as JSON string
       formData.append("facilities", JSON.stringify(facilities));
       formData.append("certification", certification);
+
+      // Add promo text
+      formData.append("promo", promo);
 
       // Add main image - handle both new uploads and existing images
       if (mainImagePreview) {
@@ -615,7 +623,7 @@ export default function EditUnitPage() {
       {/* Edit Form */}
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic" className="flex items-center gap-2">
               <Home className="h-4 w-4" />
               Basic Info
@@ -634,6 +642,10 @@ export default function EditUnitPage() {
             >
               <FileText className="h-4 w-4" />
               Description
+            </TabsTrigger>
+            <TabsTrigger value="promo" className="flex items-center gap-2">
+              <Megaphone className="h-4 w-4" />
+              Promo
             </TabsTrigger>
           </TabsList>
 
@@ -1050,6 +1062,54 @@ export default function EditUnitPage() {
                             </Button>
                           </div>
                         ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Promo Tab */}
+          <TabsContent value="promo">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Megaphone className="h-5 w-5" />
+                  Special Promotion
+                </CardTitle>
+                <CardDescription>
+                  Add special promotion details for this unit
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="promo">Promo Description</Label>
+                    <Textarea
+                      id="promo"
+                      placeholder="Enter special promotion details here (e.g., 'Limited Time Offer: 10% Off', 'Free Interior Package', etc.)"
+                      className="min-h-[120px]"
+                      value={promo}
+                      onChange={(e) => setPromo(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      If left empty, no promo section will appear on the unit
+                      page
+                    </p>
+                  </div>
+
+                  {promo && (
+                    <div className="border rounded-md p-4 bg-muted/50">
+                      <h3 className="text-sm font-medium mb-2">Preview:</h3>
+                      <div className="bg-card border rounded-md p-3 dark:bg-background/60">
+                        <div className="flex items-center gap-2 text-primary mb-2">
+                          <Megaphone className="h-4 w-4" />
+                          <span className="font-semibold text-sm">
+                            Special Promo
+                          </span>
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap">{promo}</p>
                       </div>
                     </div>
                   )}

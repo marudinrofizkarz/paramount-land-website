@@ -50,6 +50,7 @@ export async function getUnitSchema() {
     mainImage: z.string().url({ message: "Main image must be a valid URL." }),
     galleryImages: z.array(z.string().url()).optional(),
     status: z.enum(["active", "draft", "sold"]).default("active"),
+    promo: z.string().optional(),
   });
 }
 
@@ -81,6 +82,7 @@ export async function createUnit(
     const certification = formData.get("certification") as string;
     const facilities = (formData.get("facilities") as string) || null;
     const status = (formData.get("status") as string) || "active";
+    const promo = (formData.get("promo") as string) || null;
 
     // Handle main image upload
     const mainImageFile = formData.get("mainImage");
@@ -153,39 +155,132 @@ export async function createUnit(
     }
 
     // Create unit in database
-    const result = (await query(
-      `
-      INSERT INTO units (
-        name, slug, project_id, description, dimensions, 
-        land_area, building_area, sale_price, bedrooms, 
-        bathrooms, carports, floors, certification, 
-        facilities, main_image, gallery_images, status, 
-        created_at, updated_at
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-        datetime('now'), datetime('now')
-      )
-    `,
-      [
-        name,
-        slug,
-        projectId,
-        description,
-        dimensions,
-        landArea,
-        buildingArea,
-        salePrice,
-        bedrooms,
-        bathrooms,
-        carports,
-        floors,
-        certification,
-        facilities,
-        mainImageUrl,
-        JSON.stringify(galleryImages),
-        status,
-      ]
-    )) as QueryResult;
+    let result: QueryResult;
+
+    // Check if promo column exists in units table before attempting insertion
+    try {
+      const columnCheck = await query(
+        `SELECT COUNT(*) as count FROM pragma_table_info('units') WHERE name = 'promo'`
+      );
+
+      const columnRows = columnCheck.rows || [];
+      const hasPromoColumn =
+        columnRows.length > 0 &&
+        columnRows[0].count !== undefined &&
+        Number(columnRows[0].count) > 0;
+
+      if (hasPromoColumn) {
+        // If promo column exists, include it in the query
+        result = (await query(
+          `
+          INSERT INTO units (
+            name, slug, project_id, description, dimensions, 
+            land_area, building_area, sale_price, bedrooms, 
+            bathrooms, carports, floors, certification, 
+            facilities, main_image, gallery_images, status, 
+            promo, created_at, updated_at
+          ) VALUES (
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            datetime('now'), datetime('now')
+          )
+        `,
+          [
+            name,
+            slug,
+            projectId,
+            description,
+            dimensions,
+            landArea,
+            buildingArea,
+            salePrice,
+            bedrooms,
+            bathrooms,
+            carports,
+            floors,
+            certification,
+            facilities,
+            mainImageUrl,
+            JSON.stringify(galleryImages),
+            status,
+            promo,
+          ]
+        )) as QueryResult;
+      } else {
+        console.log(
+          "Promo column does not exist in units table. Creating unit without promo."
+        );
+        // If promo column doesn't exist, exclude it from the query
+        result = (await query(
+          `
+          INSERT INTO units (
+            name, slug, project_id, description, dimensions, 
+            land_area, building_area, sale_price, bedrooms, 
+            bathrooms, carports, floors, certification, 
+            facilities, main_image, gallery_images, status, 
+            created_at, updated_at
+          ) VALUES (
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            datetime('now'), datetime('now')
+          )
+        `,
+          [
+            name,
+            slug,
+            projectId,
+            description,
+            dimensions,
+            landArea,
+            buildingArea,
+            salePrice,
+            bedrooms,
+            bathrooms,
+            carports,
+            floors,
+            certification,
+            facilities,
+            mainImageUrl,
+            JSON.stringify(galleryImages),
+            status,
+          ]
+        )) as QueryResult;
+      }
+    } catch (columnError) {
+      console.error("Error checking promo column:", columnError);
+      // Fallback to original insert without promo
+      result = (await query(
+        `
+        INSERT INTO units (
+          name, slug, project_id, description, dimensions, 
+          land_area, building_area, sale_price, bedrooms, 
+          bathrooms, carports, floors, certification, 
+          facilities, main_image, gallery_images, status, 
+          created_at, updated_at
+        ) VALUES (
+          ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+          datetime('now'), datetime('now')
+        )
+      `,
+        [
+          name,
+          slug,
+          projectId,
+          description,
+          dimensions,
+          landArea,
+          buildingArea,
+          salePrice,
+          bedrooms,
+          bathrooms,
+          carports,
+          floors,
+          certification,
+          facilities,
+          mainImageUrl,
+          JSON.stringify(galleryImages),
+          status,
+        ]
+      )) as QueryResult;
+    }
 
     if (result.lastID) {
       return { success: true, id: result.lastID };
@@ -437,6 +532,7 @@ export async function updateUnit(
     const certification = formData.get("certification") as string;
     const facilities = (formData.get("facilities") as string) || null;
     const status = (formData.get("status") as string) || "active";
+    const promo = (formData.get("promo") as string) || null;
 
     // Generate a slug from the name (in case the name was changed)
     const slug = slugify(name);
@@ -549,7 +645,7 @@ export async function updateUnit(
         bedrooms = ?, bathrooms = ?, carports = ?, 
         floors = ?, certification = ?, facilities = ?, 
         main_image = ?, gallery_images = ?, status = ?, 
-        updated_at = datetime('now')
+        promo = ?, updated_at = datetime('now')
       WHERE id = ?
     `,
       [
@@ -569,6 +665,7 @@ export async function updateUnit(
         mainImageUrl,
         JSON.stringify(galleryImages),
         status,
+        promo,
         unitId,
       ]
     );

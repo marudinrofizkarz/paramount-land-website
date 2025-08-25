@@ -281,42 +281,12 @@ export function ProjectSlider({ projects = [], type }: ProjectSliderProps) {
               index === currentIndex
                 ? "bg-primary w-6"
                 : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-            } ${isMobile ? "relative" : ""}`}
+            }`}
             aria-label={`Go to slide ${index + 1}`}
-          >
-            {isMobile && index === currentIndex && (
-              <span className="absolute inset-0 bg-primary/30 rounded-full animate-ping"></span>
-            )}
-          </button>
+          ></button>
         ))}
 
-        {/* Mobile auto-slide indicator */}
-        {isMobile && (
-          <div className="ml-2 flex items-center">
-            <span className="text-xs text-muted-foreground">Auto-sliding</span>
-            <div className="ml-1 w-4 h-4 relative">
-              <svg
-                className="w-4 h-4 animate-spin text-primary"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  fill="none"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            </div>
-          </div>
-        )}
+        {/* Auto-sliding functionality is active on mobile but indicator is hidden */}
       </div>
     </div>
   );

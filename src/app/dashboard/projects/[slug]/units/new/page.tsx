@@ -128,6 +128,7 @@ export default function NewUnitPage() {
   const [certification, setCertification] = useState("SHGB");
   const [facilities, setFacilities] = useState<string[]>([]);
   const [customFacility, setCustomFacility] = useState("");
+  const [promo, setPromo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Editor for rich text description
@@ -338,6 +339,11 @@ export default function NewUnitPage() {
     formData.append("facilities", JSON.stringify(facilities));
     formData.append("certification", certification);
 
+    // Add promo if available
+    if (promo) {
+      formData.append("promo", promo);
+    }
+
     // Add main image
     if (mainImagePreview) {
       formData.append("mainImage", mainImagePreview);
@@ -515,47 +521,43 @@ export default function NewUnitPage() {
         />
 
         <div className="mt-4 grid grid-cols-5 gap-1 md:gap-2">
-        {stepsMetadata.map((s: any, i: number) => (
-          <button
-            key={s.id}
-            onClick={() => goTo(i)}
-            className={`flex items-center justify-center p-2 md:p-3 rounded-md transition-colors ${
-              i === currentStepIndex
-                ? "bg-primary text-primary-foreground"
-                : i < currentStepIndex
-                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
-          >
-            <div className="flex flex-col items-center md:flex-row md:items-center">
-              <div className={`${
-                i < currentStepIndex 
-                  ? "" 
-                  : "mb-1 md:mb-0 md:mr-2"
-              }`}>
-                {i < currentStepIndex ? (
-                  <Check className="h-4 w-4 md:h-5 md:w-5" />
-                ) : (
-                  <span className="block md:hidden">
-                    {React.cloneElement(s.icon, { className: "h-4 w-4" })}
+          {stepsMetadata.map((s: any, i: number) => (
+            <button
+              key={s.id}
+              onClick={() => goTo(i)}
+              className={`flex items-center justify-center p-2 md:p-3 rounded-md transition-colors ${
+                i === currentStepIndex
+                  ? "bg-primary text-primary-foreground"
+                  : i < currentStepIndex
+                  ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              <div className="flex flex-col items-center md:flex-row md:items-center">
+                <div
+                  className={`${
+                    i < currentStepIndex ? "" : "mb-1 md:mb-0 md:mr-2"
+                  }`}
+                >
+                  {i < currentStepIndex ? (
+                    <Check className="h-4 w-4 md:h-5 md:w-5" />
+                  ) : (
+                    <span className="block md:hidden">
+                      {React.cloneElement(s.icon, { className: "h-4 w-4" })}
+                    </span>
+                  )}
+                  <span className="hidden md:block">
+                    {React.cloneElement(s.icon, { className: "h-5 w-5" })}
                   </span>
-                )}
-                <span className="hidden md:block">
-                  {React.cloneElement(s.icon, { className: "h-5 w-5" })}
+                </div>
+                <span className="text-xs md:text-sm font-medium md:inline">
+                  <span className="block md:hidden">{i + 1}</span>
+                  <span className="hidden md:block">{s.name}</span>
                 </span>
               </div>
-              <span className="text-xs md:text-sm font-medium md:inline">
-                <span className="block md:hidden">
-                  {i + 1}
-                </span>
-                <span className="hidden md:block">
-                  {s.name}
-                </span>
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -1001,6 +1003,21 @@ export default function NewUnitPage() {
                 )}
               </div>
 
+              <div className="space-y-4 mb-6">
+                <Label>Unit Promo</Label>
+                <Textarea
+                  placeholder="Enter special promotion details here (e.g., 'Limited Time Offer: 10% Off', 'Free Interior Package', etc.)"
+                  className="min-h-[100px]"
+                  id="promo"
+                  name="promo"
+                  value={promo}
+                  onChange={(e) => setPromo(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  If left empty, no promo section will appear on the unit page
+                </p>
+              </div>
+
               <div className="space-y-4">
                 <Label>Facilities</Label>
                 <div className="border rounded-md p-4">
@@ -1237,6 +1254,17 @@ export default function NewUnitPage() {
                         )}
                       </div>
                     </>
+                  )}
+
+                  <h3 className="font-medium text-lg mt-6 mb-4">Promo</h3>
+                  {promo ? (
+                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900 rounded-md">
+                      <p className="text-sm">{promo}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No promo specified
+                    </p>
                   )}
 
                   <h3 className="font-medium text-lg mt-6 mb-4">Facilities</h3>

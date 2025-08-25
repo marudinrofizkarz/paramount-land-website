@@ -51,6 +51,7 @@ import {
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { UnitSidebarCards } from "@/components/unit-sidebar-cards";
+import { UnitPromoCard } from "@/components/unit-promo-card";
 
 // Impor fungsi untuk mengambil data unit
 import { getUnitBySlug } from "@/lib/unit-actions";
@@ -208,6 +209,7 @@ export default function UnitDetailPage({
     location,
     project_status,
     project_id, // Tambahkan project_id di sini
+    promo, // Tambahkan promo di sini
   } = unit;
 
   // Konversi facilities dari string ke array jika perlu
@@ -533,8 +535,6 @@ export default function UnitDetailPage({
 
                         {/* Kolom Kanan */}
                         <div className="space-y-4">
-  
-
                           <div className="flex items-start gap-3">
                             <Car className="h-5 w-5 text-primary mt-0.5" />
                             <div>
@@ -790,6 +790,13 @@ export default function UnitDetailPage({
                   )}
                 </CardContent>
               </Card>
+
+              {/* Promo Section */}
+              {promo && (
+                <div className="mb-6">
+                  <UnitPromoCard promoText={promo} />
+                </div>
+              )}
 
               {/* Kartu Lihat Unit Lainnya */}
               <Card>

@@ -19,6 +19,7 @@ export interface Unit {
   galleryImages?: string[];
   youtubeUrl?: string;
   brochureUrl?: string;
+  promo?: string;
 }
 
 export interface Project {
