@@ -3,8 +3,8 @@ import { getPublishedNews } from "@/lib/news-actions";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Base URL
-  const baseUrl = "https://www.paramount-land.com";
+  // Base URL - use relative paths instead of hardcoded domain
+  const baseUrl = "";
 
   // Dapatkan semua proyek publik
   const projectsResponse = await getPublicProjects();

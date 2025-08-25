@@ -5,13 +5,11 @@ import Image from "next/image";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
-import { ChevronRight, Calendar, Tag, Share2, Facebook, Twitter, Linkedin, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronRight, Calendar, Tag, Share2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CopyLinkButton } from "@/components/copy-link-button";
+import ShareButtons from "@/components/share-buttons";
 
 interface NewsPageProps {
   params: {
@@ -38,17 +36,17 @@ export async function generateMetadata({ params }: NewsPageProps) {
       title: `${news.title} | Paramount Land`,
       description: news.description,
       images: news.featured_image ? [news.featured_image] : [],
-      type: 'article',
-      publishedTime: news.published_at,
-      modifiedTime: news.updated_at,
+      type: "article",
+      publishedTime: news.published_at || undefined,
+      modifiedTime: news.updated_at || new Date().toISOString(),
       section: news.category,
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: news.title,
       description: news.description,
       images: news.featured_image ? [news.featured_image] : [],
-    }
+    },
   };
 }
 
@@ -60,7 +58,7 @@ export default async function NewsPage({ params }: NewsPageProps) {
   // Ambil semua berita untuk navigasi header
   const newsListResponse = await getPublishedNews();
   const allNews = newsListResponse.success ? newsListResponse.data : [];
-  
+
   // Tambahkan ini untuk mengambil data proyek
   const projectsResponse = await getPublicProjects();
   const projects = projectsResponse.success ? projectsResponse.data : [];
@@ -73,17 +71,15 @@ export default async function NewsPage({ params }: NewsPageProps) {
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   // URL untuk berbagi
-  const shareUrl = typeof window !== 'undefined' 
-    ? window.location.href 
-    : `https://paramount-land.com/news/${slug}`;
+  const shareUrl = `/news/${slug}`;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -100,7 +96,9 @@ export default async function NewsPage({ params }: NewsPageProps) {
               priority
             />
           ) : (
-            <div className={`w-full h-full ${news.bg_color} flex items-center justify-center`}>
+            <div
+              className={`w-full h-full ${news.bg_color} flex items-center justify-center`}
+            >
               {/* <div className="text-8xl opacity-30">{news.icon || '📰'}</div> */}
             </div>
           )}
@@ -133,7 +131,9 @@ export default async function NewsPage({ params }: NewsPageProps) {
                 News & Updates
               </Link>
               <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="text-foreground truncate max-w-[200px]">{news.title}</span>
+              <span className="text-foreground truncate max-w-[200px]">
+                {news.title}
+              </span>
             </div>
           </div>
         </div>
@@ -147,7 +147,7 @@ export default async function NewsPage({ params }: NewsPageProps) {
                 <div className="text-xl text-muted-foreground mb-8">
                   {news.description}
                 </div>
-                <div dangerouslySetInnerHTML={{ __html: news.content || '' }} />
+                <div dangerouslySetInnerHTML={{ __html: news.content || "" }} />
               </div>
 
               {/* Share Section */}
@@ -157,75 +157,11 @@ export default async function NewsPage({ params }: NewsPageProps) {
                   Bagikan Artikel
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="outline" size="icon" asChild>
-                          <a
-                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Share on Facebook"
-                          >
-                            <Facebook className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Share on Facebook</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="outline" size="icon" asChild>
-                          <a
-                            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(news.title)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Share on Twitter"
-                          >
-                            <Twitter className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Share on Twitter</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="outline" size="icon" asChild>
-                          <a
-                            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Share on LinkedIn"
-                          >
-                            <Linkedin className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Share on LinkedIn</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  {/* // Di bagian tombol share */}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <CopyLinkButton shareUrl={shareUrl} />
-                      <TooltipContent>
-                        <p>Copy link</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ShareButtons
+                    shareUrl={shareUrl}
+                    newsTitle={news.title}
+                    featuredImage={news.featured_image}
+                  />
                 </div>
               </div>
             </div>
@@ -245,23 +181,31 @@ export default async function NewsPage({ params }: NewsPageProps) {
                   <div className="space-y-4">
                     {allNews && allNews.length > 0 ? (
                       allNews
-                        .filter(item => item.id !== news.id && item.category === news.category)
+                        .filter(
+                          (item) =>
+                            item.id !== news.id &&
+                            item.category === news.category
+                        )
                         .slice(0, 3)
-                        .map(item => (
+                        .map((item) => (
                           <div key={item.id} className="group">
                             <Link href={`/news/${item.slug}`} className="block">
                               <h4 className="font-medium group-hover:text-primary transition-colors line-clamp-2">
                                 {item.title}
                               </h4>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {formatDate(item.published_at || item.created_at)}
+                                {formatDate(
+                                  item.published_at || item.created_at
+                                )}
                               </p>
                             </Link>
                             <Separator className="mt-3" />
                           </div>
                         ))
                     ) : (
-                      <p className="text-muted-foreground">Tidak ada artikel terkait.</p>
+                      <p className="text-muted-foreground">
+                        Tidak ada artikel terkait.
+                      </p>
                     )}
                   </div>
                 </CardContent>

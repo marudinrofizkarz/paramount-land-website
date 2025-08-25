@@ -34,6 +34,8 @@ interface ContactInquiryModalProps {
   projectSlug?: string;
   unitSlug?: string;
   triggerClassName?: string;
+  buttonText?: string;
+  description?: string | React.ReactNode;
 }
 
 export function ContactInquiryModal({
@@ -42,6 +44,8 @@ export function ContactInquiryModal({
   projectSlug,
   unitSlug,
   triggerClassName = "w-full",
+  buttonText = "Contact for Inquiry",
+  description,
 }: ContactInquiryModalProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,8 +56,12 @@ export function ContactInquiryModal({
     name: "",
     email: "",
     phone: "",
-    message: "",
-    inquiryType: "general",
+    message:
+      projectId === "sales-consultation"
+        ? "I would like to schedule a consultation with Rizal Sutanto to discuss property investment opportunities."
+        : "",
+    inquiryType:
+      projectId === "sales-consultation" ? "consultation" : "general",
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -63,7 +71,7 @@ export function ContactInquiryModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
+
     try {
       const submissionData = {
         ...formData,
@@ -71,14 +79,19 @@ export function ContactInquiryModal({
         projectName,
         unitSlug: unitSlug || null,
       };
-  
+
       // Gunakan wrapper untuk memanggil server action (tanpa perlu meneruskan fungsi server action)
-      const serializedResult = await submitContactInquiryWrapper(null, submissionData);
-  
+      const serializedResult = await submitContactInquiryWrapper(
+        null,
+        submissionData
+      );
+
       if (serializedResult.success) {
         // Gunakan SweetAlert untuk notifikasi sukses
-        await showSuccess("Inquiry berhasil dikirim! Terima kasih atas minat Anda. Kami akan segera menghubungi Anda.");
-        
+        await showSuccess(
+          "Inquiry berhasil dikirim! Terima kasih atas minat Anda. Kami akan segera menghubungi Anda."
+        );
+
         setOpen(false);
         setFormData({
           name: "",
@@ -89,11 +102,15 @@ export function ContactInquiryModal({
         });
       } else {
         // Gunakan SweetAlert untuk notifikasi error
-        await showError(serializedResult.error || "Gagal mengirim inquiry. Silakan coba lagi.");
+        await showError(
+          serializedResult.error || "Gagal mengirim inquiry. Silakan coba lagi."
+        );
       }
     } catch (error) {
       // Gunakan SweetAlert untuk notifikasi error
-      await showError("Terjadi kesalahan yang tidak terduga. Silakan coba lagi.");
+      await showError(
+        "Terjadi kesalahan yang tidak terduga. Silakan coba lagi."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +121,7 @@ export function ContactInquiryModal({
       <DialogTrigger asChild>
         <Button className={triggerClassName}>
           <Mail className="mr-2 h-4 w-4" />
-          Contact for Inquiry
+          {buttonText}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
@@ -114,7 +131,14 @@ export function ContactInquiryModal({
             Contact for Inquiry
           </DialogTitle>
           <DialogDescription>
-            Interested in <strong>{projectName}</strong>? Send us your inquiry and we'll get back to you soon.
+            {description ? (
+              description
+            ) : (
+              <>
+                Interested in <strong>{projectName}</strong>? Send us your
+                inquiry and we'll get back to you soon.
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -185,6 +209,11 @@ export function ContactInquiryModal({
                 <SelectItem value="general">General Information</SelectItem>
                 <SelectItem value="pricing">Pricing & Payment</SelectItem>
                 <SelectItem value="visit">Schedule a Visit</SelectItem>
+                {projectId === "sales-consultation" && (
+                  <SelectItem value="consultation">
+                    Sales Consultation
+                  </SelectItem>
+                )}
                 {unitSlug && (
                   <SelectItem value="unit_specific">About This Unit</SelectItem>
                 )}
@@ -196,7 +225,9 @@ export function ContactInquiryModal({
           <div className="space-y-2">
             <Label htmlFor="message">
               Message
-              <span className="text-sm text-muted-foreground ml-1">(Optional)</span>
+              <span className="text-sm text-muted-foreground ml-1">
+                (Optional)
+              </span>
             </Label>
             <Textarea
               id="message"
@@ -219,11 +250,7 @@ export function ContactInquiryModal({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

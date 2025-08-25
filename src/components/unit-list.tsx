@@ -164,17 +164,15 @@ export function UnitList({
                   <span className="ml-2">{unit.dimensions}</span>
                 </div>
 
-                {/* Land and Building Area with icons */}
+                {/* Land and Building Area without icons */}
                 <div className="flex flex-wrap gap-4 text-sm">
                   <div className="flex items-center">
-                    <Square className="h-4 w-4 mr-1 text-green-600" />
                     <span className="font-medium text-muted-foreground">
                       LT:
                     </span>
                     <span className="ml-1">{unit.land_area} m²</span>
                   </div>
                   <div className="flex items-center">
-                    <Square className="h-4 w-4 mr-1 text-blue-600" />
                     <span className="font-medium text-muted-foreground">
                       LB:
                     </span>

@@ -49,6 +49,18 @@ export async function generateMetadata({ params }: ProjectPageProps) {
   return {
     title: `${project.name} | Paramount Land`,
     description: project.description,
+    openGraph: {
+      title: `${project.name} | Paramount Land`,
+      description: project.description,
+      images: project.mainImage ? [project.mainImage] : [],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.name} | Paramount Land`,
+      description: project.description,
+      images: project.mainImage ? [project.mainImage] : [],
+    },
   };
 }
 

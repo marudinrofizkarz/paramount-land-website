@@ -4,8 +4,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { fontVariables } from "@/lib/font";
 import { WhatsAppLayout } from "@/components/whatsapp-layout";
+import { constructMetadata } from "./metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = constructMetadata({
   title: "Paramount Land - Building Homes and People with Heart",
   description:
     "Property development and management with a focus on creating meaningful living spaces and communities",
@@ -16,10 +17,7 @@ export const metadata: Metadata = {
     apple:
       "https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg",
   },
-  other: {
-    "format-detection": "telephone=no, date=no, email=no, address=no",
-  },
-};
+});
 
 export const viewport: Viewport = {
   themeColor: [

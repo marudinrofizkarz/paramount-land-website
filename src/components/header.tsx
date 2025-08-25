@@ -27,9 +27,11 @@ export function Header({ projects }: { projects: Project[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { resolvedTheme } = useTheme();
-  const [logoSrc, setLogoSrc] = useState(
-    "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
-  );
+  // Referensi langsung ke logo lokal untuk performa yang lebih baik
+  const lightLogoSrc = "/images/paramount-logo-light.png"; // Simpan logo di folder public
+  const darkLogoSrc = "/images/paramount-logo-dark.png"; // Simpan logo di folder public
+
+  const [logoSrc, setLogoSrc] = useState(lightLogoSrc);
   const [isMounted, setIsMounted] = useState(false);
   const { menus, loading: menusLoading } = useWebsiteMenus(); // Tambahkan hook useWebsiteMenus
 
@@ -39,11 +41,7 @@ export function Header({ projects }: { projects: Project[] }) {
 
   useEffect(() => {
     if (isMounted) {
-      setLogoSrc(
-        resolvedTheme === "dark"
-          ? "https://res.cloudinary.com/diyyyav1i/image/upload/v1754036143/paramount-light_ta1kve.png"
-          : "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
-      );
+      setLogoSrc(resolvedTheme === "dark" ? darkLogoSrc : lightLogoSrc);
     }
   }, [resolvedTheme, isMounted]);
 
@@ -149,7 +147,7 @@ export function Header({ projects }: { projects: Project[] }) {
           <Link href="/" className="inline-block">
             <Image
               src={logoSrc}
-              alt="EstateLink logo"
+              alt="Paramount Land logo"
               width={150}
               height={40}
               className="transition-all duration-200 hover:opacity-90"
@@ -188,7 +186,7 @@ export function Header({ projects }: { projects: Project[] }) {
                   >
                     <Image
                       src={logoSrc}
-                      alt="EstateLink logo"
+                      alt="Paramount Land logo"
                       width={150}
                       height={40}
                       className="mr-2"
@@ -222,7 +220,7 @@ export function Header({ projects }: { projects: Project[] }) {
                   </div>
                   <div className="p-4 border-t border-gray-100 dark:border-gray-800">
                     <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      © 2025 EstateLink. All rights reserved.
+                      © 2025 Paramount Land. All rights reserved.
                     </p>
                   </div>
                 </div>

@@ -1,61 +1,23 @@
-import {
-  Geist,
-  Geist_Mono,
-  Instrument_Sans,
-  Inter,
-  Mulish,
-  Noto_Sans_Mono
-} from 'next/font/google';
+import { Geist, Geist_Mono } from "next/font/google";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
+// Kurangi jumlah font untuk meningkatkan performa loading
 const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
   preload: true,
+  // Tambahkan font fallback untuk meningkatkan performa
+  fallback: ["system-ui", "arial", "sans-serif"],
 });
 
 const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
   preload: true,
+  fallback: ["monospace"],
 });
 
-const fontInstrument = Instrument_Sans({
-  subsets: ['latin'],
-  variable: '--font-instrument',
-  display: 'swap',
-  preload: true,
-});
-
-const fontNotoMono = Noto_Sans_Mono({
-  subsets: ['latin'],
-  variable: '--font-noto-mono',
-  display: 'swap',
-  preload: true,
-});
-
-const fontMullish = Mulish({
-  subsets: ['latin'],
-  variable: '--font-mullish',
-  display: 'swap',
-  preload: true,
-});
-
-const fontInter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  preload: true,
-});
-
-export const fontVariables = cn(
-  fontSans.variable,
-  fontMono.variable,
-  fontInstrument.variable,
-  fontNotoMono.variable,
-  fontMullish.variable,
-  fontInter.variable
-);
+export const fontVariables = cn(fontSans.variable, fontMono.variable);
