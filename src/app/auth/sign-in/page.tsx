@@ -32,8 +32,7 @@ export default function SignInPage() {
         </div>
         <SignIn
           routing="path"
-          redirectUrl="/dashboard"
-          afterSignInUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
           path="/auth/sign-in"
           appearance={{
             elements: {
