@@ -41,6 +41,7 @@ export function Header({ projects }: { projects: Project[] }) {
 
   useEffect(() => {
     if (isMounted) {
+      // Pada dark mode gunakan dark logo, pada light mode gunakan light logo
       setLogoSrc(resolvedTheme === "dark" ? darkLogoSrc : lightLogoSrc);
     }
   }, [resolvedTheme, isMounted]);

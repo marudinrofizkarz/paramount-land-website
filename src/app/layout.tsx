@@ -6,6 +6,8 @@ import { fontVariables } from "@/lib/font";
 import { WhatsAppLayout } from "@/components/whatsapp-layout";
 import { constructMetadata } from "./metadata";
 import { OrganizationSchemaScript } from "@/components/schema-script";
+import { CoreWebVitals } from "@/components/core-web-vitals";
+import Script from "next/script";
 
 export const metadata: Metadata = constructMetadata({
   title: "Paramount Land - Building Homes and People with Heart",
@@ -43,8 +45,18 @@ export default function RootLayout({
     >
       <html lang="id" suppressHydrationWarning>
         <head>
-          {/* Google Tag Manager */}
-          <script
+          {/* Preload critical assets */}
+          <link
+            rel="preload"
+            href="https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg"
+            as="image"
+            type="image/jpeg"
+          />
+
+          {/* Google Tag Manager - optimized with next/script */}
+          <Script
+            id="gtm-script"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -55,12 +67,15 @@ export default function RootLayout({
           />
           {/* End Google Tag Manager */}
 
-          {/* Google Analytics 4 (GA4) */}
-          <script
-            async
+          {/* Google Analytics 4 (GA4) - optimized with next/script */}
+          <Script
+            id="ga4-loader"
+            strategy="afterInteractive"
             src="https://www.googletagmanager.com/gtag/js?id=G-E0LM9C8Y6G"
-          ></script>
-          <script
+          />
+          <Script
+            id="ga4-config"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 window.dataLayer = window.dataLayer || [];
@@ -70,7 +85,6 @@ export default function RootLayout({
               `,
             }}
           />
-          {/* End Google Analytics 4 */}
 
           {/* SEO Meta Tags */}
           <meta name="format-detection" content="telephone=no" />
@@ -82,6 +96,14 @@ export default function RootLayout({
           <meta name="rating" content="general" />
           <meta name="geo.region" content="ID" />
           <meta name="geo.placename" content="Indonesia" />
+
+          {/* WhatsApp Specific Meta Tags */}
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta
+            property="og:image:alt"
+            content="Paramount Land - Building Homes and People with Heart"
+          />
           <link
             rel="alternate"
             hrefLang="id"
@@ -120,6 +142,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <CoreWebVitals />
             <WhatsAppLayout>{children}</WhatsAppLayout>
             <OrganizationSchemaScript />
           </ThemeProvider>

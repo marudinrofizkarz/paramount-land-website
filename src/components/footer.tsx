@@ -24,7 +24,10 @@ import { Input } from "@/components/ui/input";
 
 export function Footer() {
   const { resolvedTheme } = useTheme();
-  const [logoSrc, setLogoSrc] = useState("/images/paramount-logo-light.png");
+  // Referensi langsung ke logo lokal untuk performa yang lebih baik
+  const lightLogoSrc = "/images/paramount-logo-light.png"; // Logo untuk light mode
+  const darkLogoSrc = "/images/paramount-logo-dark.png"; // Logo untuk dark mode
+  const [logoSrc, setLogoSrc] = useState(lightLogoSrc);
   const [isMounted, setIsMounted] = useState(false);
   const [menus, setMenus] = useState<MenuTreeItem[]>([]);
   const [menusLoading, setMenusLoading] = useState(true);
@@ -39,13 +42,10 @@ export function Footer() {
 
   useEffect(() => {
     if (isMounted) {
-      setLogoSrc(
-        resolvedTheme === "dark"
-          ? "/images/paramount-logo-light.png"
-          : "/images/paramount-logo-dark.png"
-      );
+      // Pada dark mode gunakan dark logo, pada light mode gunakan light logo
+      setLogoSrc(resolvedTheme === "dark" ? darkLogoSrc : lightLogoSrc);
     }
-  }, [resolvedTheme, isMounted]);
+  }, [resolvedTheme, isMounted, lightLogoSrc, darkLogoSrc]);
 
   // Fetch website menus
   useEffect(() => {
@@ -102,7 +102,10 @@ export function Footer() {
             "@type": "Organization",
             name: "Paramount Land",
             url: "https://www.rizalparamountland.com",
-            logo: "https://www.rizalparamountland.com/images/paramount-logo-dark.png",
+            logo:
+              resolvedTheme === "dark"
+                ? "https://www.rizalparamountland.com/images/paramount-logo-dark.png"
+                : "https://www.rizalparamountland.com/images/paramount-logo-light.png",
             sameAs: [
               "https://www.facebook.com/rizalparamountland",
               "https://www.instagram.com/rizalparamountland",

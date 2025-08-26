@@ -34,13 +34,18 @@ export function generateProjectSchema(project: Project, url?: string) {
  * Generate structured data schema markup for organization
  * This helps establish brand identity in search results
  */
-export function generateOrganizationSchema(baseUrl?: string) {
+export function generateOrganizationSchema(
+  baseUrl?: string,
+  isDarkMode?: boolean
+) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Paramount Land",
     url: baseUrl || getBaseUrl(),
-    logo: "https://www.rizalparamountland.com/images/paramount-logo-dark.png",
+    logo: isDarkMode
+      ? "https://www.rizalparamountland.com/images/paramount-logo-dark.png"
+      : "https://www.rizalparamountland.com/images/paramount-logo-light.png",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+6281234567890",

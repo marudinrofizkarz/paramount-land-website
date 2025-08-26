@@ -22,11 +22,13 @@ export default function SignInPage() {
           />
         </Link>
       </div>
-      
+
       <div className="w-full max-w-md">
         <div className="mb-4 text-center">
           <h1 className="text-2xl font-bold">Admin Dashboard Login</h1>
-          <p className="text-muted-foreground text-sm mt-1">Enter your credentials to access the dashboard</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Enter your credentials to access the dashboard
+          </p>
         </div>
         <SignIn
           routing="hash"

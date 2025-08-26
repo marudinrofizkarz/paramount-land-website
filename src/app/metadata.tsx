@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 
-const defaultImage =
-  "https://res.cloudinary.com/dx7xttb8a/image/upload/v1755585343/Rizal_ok36fo.jpg";
+// Image untuk social media sharing (WhatsApp, Facebook, Twitter, dll)
+const defaultImage = "/images/og-image.png"; // Gambar statis lokal (sebagai fallback)
+const absoluteImageUrl = "https://www.rizalparamountland.com/api/og"; // Gunakan API OG yang dinamis
 
 export const siteConfig = {
   name: "Paramount Land",
   description: "Building Homes and People with Heart",
   url: "https://www.rizalparamountland.com",
-  ogImage: defaultImage,
+  ogImage: absoluteImageUrl,
 };
 
 export function constructMetadata({
   title = "Paramount Land - Building Homes and People with Heart",
   description = "Paramount Land - developer properti premium di Indonesia dengan fokus pada hunian berkualitas dan properti komersial.",
-  image = defaultImage, // Use the new default image
+  image = absoluteImageUrl, // Gunakan URL absolut untuk sharing
   icons = "/favicon.ico",
   noIndex = false,
   keywords = "properti premium, developer properti, Paramount Land, rumah mewah, investasi properti, perumahan Jakarta, properti Tangerang, Serpong, rumah dijual, apartemen Jakarta, hunian mewah, property investment",
