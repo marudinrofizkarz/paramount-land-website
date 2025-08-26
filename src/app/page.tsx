@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
 import { constructMetadata } from "./metadata";
 import { Metadata } from "next";
+import HomeClient from "./home/client";
 
 export const metadata: Metadata = constructMetadata({
   title: "Paramount Land - Building Homes and People with Heart",
@@ -14,6 +14,5 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default function Home() {
-  // Redirect to the /home route to avoid the build issue with (home)
-  redirect('/home');
+  return <HomeClient />;
 }

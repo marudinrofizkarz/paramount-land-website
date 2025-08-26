@@ -1,5 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
 // Clerk akan menangani autentikasi dan proteksi rute
@@ -9,6 +9,12 @@ const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
 // 3. Menggunakan Allow List untuk email yang diizinkan
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
+  // Redirect /home to root URL for better SEO
+  const url = req.nextUrl.clone();
+  if (url.pathname === "/home") {
+    return NextResponse.redirect(new URL("/", url.origin));
+  }
+
   // Semua rute dashboard memerlukan autentikasi
   if (isProtectedRoute(req)) {
     await auth.protect();
