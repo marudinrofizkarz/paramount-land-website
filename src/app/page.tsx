@@ -1,4 +1,4 @@
-import HomeClient from "./home/client";
+import { redirect } from 'next/navigation';
 import { constructMetadata } from "./metadata";
 import { Metadata } from "next";
 
@@ -10,9 +10,10 @@ export const metadata: Metadata = constructMetadata({
     "properti premium, perumahan, properti komersial, investasi properti, developer properti, rumah dijual, Paramount Land, properti Indonesia, rumah mewah, properti strategis",
   // We explicitly set a high quality image for social media sharing
   image:
-    "https://res.cloudinary.com/dwqiuq8cq/image/upload/v1755585343/Rizal_ok36fo.jpg",
+    "https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg",
 });
 
 export default function Home() {
-  return <HomeClient />;
+  // Redirect to the /home route to avoid the build issue with (home)
+  redirect('/home');
 }
