@@ -1,6 +1,7 @@
 import { getProjectBySlug, getPublicProjects } from "@/lib/project-actions";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { getBaseUrl } from "@/lib/utils/url";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,11 @@ import { UnitList } from "@/components/unit-list";
 import { ContactInquiryModal } from "@/components/contact-inquiry-modal";
 import { SalesAvatar } from "@/components/sales-avatar";
 import { ContactButtons } from "@/components/contact-buttons";
+import { SchemaScript } from "@/components/schema-script";
+import {
+  generateProjectSchema,
+  generateBreadcrumbSchema,
+} from "@/lib/schema-markup";
 
 interface ProjectPageProps {
   params: {
@@ -46,20 +52,55 @@ export async function generateMetadata({ params }: ProjectPageProps) {
     };
   }
 
+  // Create SEO-friendly description by limiting characters
+  const cleanDescription =
+    project.description?.replace(/<[^>]*>/g, "").substring(0, 160) + "...";
+
+  // Add relevant keywords based on property type and location
+  const keywords = `${project.name}, ${project.status} property, ${project.location}, real estate, property for sale, Paramount Land, premium property`;
+
+  // Create canonical URL using dynamic base URL
+  const baseUrl = getBaseUrl();
+  const canonicalUrl = `${baseUrl}/projects/${slug}`;
+
   return {
-    title: `${project.name} | Paramount Land`,
-    description: project.description,
+    title: `${project.name} | Properti ${
+      project.status === "residential" ? "Hunian" : "Komersial"
+    } di ${project.location} | Paramount Land`,
+    description:
+      cleanDescription ||
+      `Informasi lengkap tentang ${project.name} di ${
+        project.location
+      }. Lihat harga mulai dari ${new Intl.NumberFormat("id-ID").format(
+        parseInt(project.startingPrice)
+      )} dan fasilitas premium dari Paramount Land.`,
+    keywords,
     openGraph: {
-      title: `${project.name} | Paramount Land`,
-      description: project.description,
+      title: `${project.name} - Properti Premium di ${project.location} | Paramount Land`,
+      description: cleanDescription || project.description,
       images: project.mainImage ? [project.mainImage] : [],
       type: "website",
+      url: canonicalUrl,
+      locale: "id_ID",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${project.name} | Paramount Land`,
-      description: project.description,
+      title: `${project.name} | Properti di ${project.location} | Paramount Land`,
+      description: cleanDescription || project.description,
       images: project.mainImage ? [project.mainImage] : [],
+    },
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
   };
 }
@@ -110,9 +151,27 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const youtubeId = getYouTubeId(project.youtubeLink);
 
+  const baseUrl = getBaseUrl();
+
+  // Generate schema markup
+  const projectSchema = generateProjectSchema(
+    project,
+    `${baseUrl}/projects/${slug}`
+  );
+
+  // Generate breadcrumb schema
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", item: `${baseUrl}/` },
+    { name: "Projects", item: `${baseUrl}/#projects` },
+    { name: project.name, item: `${baseUrl}/projects/${slug}` },
+  ]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header projects={allProjects} />
+      {/* Schema markup for SEO */}
+      <SchemaScript schema={projectSchema} />
+      <SchemaScript schema={breadcrumbSchema} />
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative h-[50vh] md:h-[60vh] bg-muted">
