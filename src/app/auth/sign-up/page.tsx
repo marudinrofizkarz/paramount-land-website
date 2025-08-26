@@ -1,25 +1,16 @@
-import { SignUp } from '@clerk/nextjs';
-import { Metadata } from 'next';
+import { SignIn } from "@clerk/nextjs";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: 'Sign Up | Paramount Land',
-  description: 'Create your Paramount Land account.'
+  title: "Sign In | Paramount Land",
+  description: "Sign in to your Paramount Land account.",
 };
 
 export default function SignUpPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md">
-        <SignUp 
-          routing="hash"
-          appearance={{
-            elements: {
-              rootBox: "mx-auto",
-              card: "shadow-none"
-            }
-          }}
-        />
-      </div>
-    </div>
-  );
-} 
+  // Mengalihkan pengguna ke halaman sign-in
+  redirect("/auth/sign-in");
+
+  // Kode di bawah ini tidak akan dijalankan karena redirect
+  return null;
+}

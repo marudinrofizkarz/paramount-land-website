@@ -67,7 +67,7 @@ export async function submitContactInquiry(data: ContactInquiryData) {
             // Create a general_inquiries project on-the-fly if no projects exist
             try {
               const now = new Date().toISOString();
-              
+
               await db.execute({
                 sql: `
                   INSERT INTO Project (
@@ -89,17 +89,21 @@ export async function submitContactInquiry(data: ContactInquiryData) {
                   0,
                   "https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg",
                   now,
-                  now
+                  now,
                 ],
               });
-              
+
               projectId = "general_inquiries";
               console.log("Created general_inquiries project on-the-fly");
             } catch (createErr) {
-              console.error("Error creating general_inquiries project:", createErr);
+              console.error(
+                "Error creating general_inquiries project:",
+                createErr
+              );
               return {
                 success: false,
-                error: "Failed to process your request. Please try again later."
+                error:
+                  "Failed to process your request. Please try again later.",
               };
             }
           }

@@ -65,7 +65,7 @@ GOOGLE_GENAI_API_KEY=your_google_ai_api_key
 ### 🌐 **App Configuration**
 
 ```env
-NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+NEXT_PUBLIC_APP_URL=https://www.rizalparamountland.com
 NEXTAUTH_SECRET=your_random_secret_string
 ```
 

@@ -24,9 +24,7 @@ import { Input } from "@/components/ui/input";
 
 export function Footer() {
   const { resolvedTheme } = useTheme();
-  const [logoSrc, setLogoSrc] = useState(
-    "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
-  );
+  const [logoSrc, setLogoSrc] = useState("/images/paramount-logo-light.png");
   const [isMounted, setIsMounted] = useState(false);
   const [menus, setMenus] = useState<MenuTreeItem[]>([]);
   const [menusLoading, setMenusLoading] = useState(true);
@@ -43,8 +41,8 @@ export function Footer() {
     if (isMounted) {
       setLogoSrc(
         resolvedTheme === "dark"
-          ? "https://res.cloudinary.com/diyyyav1i/image/upload/v1754036143/paramount-light_ta1kve.png"
-          : "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
+          ? "/images/paramount-logo-light.png"
+          : "/images/paramount-logo-dark.png"
       );
     }
   }, [resolvedTheme, isMounted]);
@@ -103,13 +101,13 @@ export function Footer() {
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Paramount Land",
-            url: "https://www.paramount-land.com",
-            logo: "https://www.paramount-land.com/lib/images/paramount-land-logo.png",
+            url: "https://www.rizalparamountland.com",
+            logo: "https://www.rizalparamountland.com/images/paramount-logo-dark.png",
             sameAs: [
-              "https://www.facebook.com/paramountland",
-              "https://www.instagram.com/paramountland",
-              "https://www.youtube.com/paramountland",
-              "https://www.linkedin.com/company/paramount-land",
+              "https://www.facebook.com/rizalparamountland",
+              "https://www.instagram.com/rizalparamountland",
+              "https://www.youtube.com/rizalparamountland",
+              "https://www.linkedin.com/company/rizal-paramount-land",
             ],
             contactPoint: {
               "@type": "ContactPoint",

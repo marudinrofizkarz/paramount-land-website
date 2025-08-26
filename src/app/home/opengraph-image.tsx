@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { siteConfig } from "./metadata";
+import { siteConfig } from "../metadata";
 
 // Route segment config
 export const runtime = "edge";
@@ -15,9 +15,9 @@ export const contentType = "image/png";
 
 // Image generation - specific for homepage
 export default async function Image() {
+  // Use a higher-quality image with better dimensions for WhatsApp sharing
   return new ImageResponse(
     (
-      // ImageResponse JSX element
       <div
         style={{
           fontSize: 128,
@@ -65,10 +65,7 @@ export default async function Image() {
         </div>
       </div>
     ),
-    // ImageResponse options
     {
-      // For convenience, we can re-use the exported opengraph-image
-      // size config to also set the ImageResponse width and height.
       ...size,
     }
   );

@@ -16,25 +16,17 @@ import {
   BrainCircuit,
   Building,
   ImageIcon,
-  MessageSquare, // Tambahkan icon untuk Contact Inquiries
+  MessageSquare,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 
 function Logo() {
   const { resolvedTheme } = useTheme();
-  const [logoSrc, setLogoSrc] = useState(
-    "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
-  );
+  const [logoSrc, setLogoSrc] = useState("https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg");
   const [isMounted, setIsMounted] = useState(false);
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-
-  // For debugging
-  useEffect(() => {
-    console.log("Sidebar state:", state);
-    console.log("isCollapsed:", isCollapsed);
-  }, [state, isCollapsed]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -42,20 +34,17 @@ function Logo() {
 
   useEffect(() => {
     if (isMounted) {
-      setLogoSrc(
-        resolvedTheme === "dark"
-          ? "https://res.cloudinary.com/diyyyav1i/image/upload/v1754036143/paramount-light_ta1kve.png"
-          : "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
-      );
+      // Always use the Cloudinary logo URL
+      setLogoSrc("https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg");
     }
-  }, [resolvedTheme, isMounted]);
+  }, [isMounted]);
 
   if (!isMounted) {
     return <div className="w-[150px] h-[40px]" />; // Placeholder to prevent layout shift
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center justify-center">
       {/* Full logo when sidebar is expanded */}
       <div className={isCollapsed ? "hidden" : "block"}>
         <Image
@@ -63,24 +52,28 @@ function Logo() {
           alt="Paramount Land logo"
           width={150}
           height={40}
+          className="h-auto w-auto max-h-[40px] max-w-[150px] object-contain"
           priority
+          unoptimized
         />
       </div>
 
       {/* Compact logo when sidebar is collapsed */}
-      <div className={isCollapsed ? "block" : "hidden"}>
+      <div className={isCollapsed ? "flex items-center justify-center w-full" : "hidden"}>
         <Image
-          src="https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg"
+          src={logoSrc}
           alt="Paramount Land icon"
           width={40}
           height={40}
-          className="rounded-md"
+          className="w-10 h-10 object-contain rounded-sm"
           priority
+          unoptimized
         />
       </div>
     </div>
   );
 }
+
 function SidebarContent() {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
@@ -89,7 +82,7 @@ function SidebarContent() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center p-2">
+        <div className="flex items-center justify-center p-2">
           <Link href="/" className="inline-flex items-center">
             <Logo />
           </Link>

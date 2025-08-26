@@ -13,6 +13,6 @@ export function getBaseUrl() {
   }
   // Fallback to production domain or localhost for development
   return process.env.NODE_ENV === "production"
-    ? "https://paramount-land.com" // Production fallback
+    ? "https://www.rizalparamountland.com" // Production fallback
     : "http://localhost:3000"; // Development
 }

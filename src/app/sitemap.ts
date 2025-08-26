@@ -3,8 +3,8 @@ import { getPublishedNews } from "@/lib/news-actions";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Base URL - use relative paths instead of hardcoded domain
-  const baseUrl = "";
+  // Base URL - use absolute URL for better SEO
+  const baseUrl = "https://www.rizalparamountland.com";
 
   // Dapatkan semua proyek publik
   const projectsResponse = await getPublicProjects();
@@ -18,6 +18,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticUrls = [
     {
       url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/home`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1.0,

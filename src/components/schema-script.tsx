@@ -27,15 +27,15 @@ export function OrganizationSchemaScript() {
     "@type": "Organization",
     name: "Paramount Land",
     url: baseUrl,
-    logo: "https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg",
+    logo: "https://www.rizalparamountland.com/images/paramount-logo-dark.png",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+6281387118533",
       contactType: "customer service",
     },
     sameAs: [
-      "https://www.facebook.com/paramountland",
-      "https://www.instagram.com/paramountland",
+      "https://www.facebook.com/rizalparamountland",
+      "https://www.instagram.com/rizalparamountland",
     ],
     description:
       "Paramount Land - Building Homes and People with Heart. Premium property developer in Indonesia focused on creating meaningful living spaces and communities.",

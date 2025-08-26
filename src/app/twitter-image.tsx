@@ -1,58 +1,66 @@
-import { ImageResponse } from 'next/og';
-import { siteConfig } from './metadata';
- 
+import { ImageResponse } from "next/og";
+import { siteConfig } from "./metadata";
+
 // Route segment config
-export const runtime = 'edge';
- 
+export const runtime = "edge";
+
 // Image metadata
-export const alt = 'Paramount Land - Premium Property Developer';
+export const alt = "Paramount Land - Building Homes and People with Heart";
 export const size = {
   width: 1200,
   height: 630,
 };
- 
-// Image generation - same as the OpenGraph image
-export default function Image() {
+
+export const contentType = "image/png";
+
+// Image generation - specific for homepage Twitter image
+export default async function Image() {
   return new ImageResponse(
     (
       <div
         style={{
           fontSize: 128,
-          background: 'white',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          position: 'relative',
+          background: "white",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          position: "relative",
         }}
       >
-        <img 
-          src={siteConfig.ogImage} 
+        <img
+          src={siteConfig.ogImage}
           alt={siteConfig.name}
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
           }}
         />
-        <div style={{
-          position: 'absolute',
-          bottom: 50,
-          left: 0,
-          width: '100%',
-          background: 'rgba(0, 0, 0, 0.7)',
-          padding: '20px 40px',
-          color: 'white',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{siteConfig.name}</div>
-          <div style={{ fontSize: '24px', marginTop: '10px' }}>{siteConfig.description}</div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 50,
+            left: 0,
+            width: "100%",
+            background: "rgba(0, 0, 0, 0.7)",
+            padding: "20px 40px",
+            color: "white",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ fontSize: "48px", fontWeight: "bold" }}>
+            {siteConfig.name}
+          </div>
+          <div style={{ fontSize: "24px", marginTop: "10px" }}>
+            {siteConfig.description}
+          </div>
         </div>
       </div>
     ),

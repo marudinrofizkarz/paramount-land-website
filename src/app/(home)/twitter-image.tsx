@@ -1,11 +1,11 @@
 import { ImageResponse } from "next/og";
-import { siteConfig } from "./metadata";
+import { siteConfig } from "../metadata";
 
 // Route segment config
 export const runtime = "edge";
 
 // Image metadata
-export const alt = "Paramount Land - Building Homes and People with Heart";
+export const alt = "Paramount Land - Premium Property Developer";
 export const size = {
   width: 1200,
   height: 630,
@@ -13,11 +13,10 @@ export const size = {
 
 export const contentType = "image/png";
 
-// Image generation - specific for homepage
+// Image generation - specific for homepage Twitter image
 export default async function Image() {
   return new ImageResponse(
     (
-      // ImageResponse JSX element
       <div
         style={{
           fontSize: 128,
@@ -65,10 +64,7 @@ export default async function Image() {
         </div>
       </div>
     ),
-    // ImageResponse options
     {
-      // For convenience, we can re-use the exported opengraph-image
-      // size config to also set the ImageResponse width and height.
       ...size,
     }
   );

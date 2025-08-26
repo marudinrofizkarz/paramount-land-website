@@ -29,9 +29,7 @@ export function OrgSwitcher({
     Tenant | undefined
   >(defaultTenant || (tenants.length > 0 ? tenants[0] : undefined));
   const { resolvedTheme } = useTheme();
-  const [logoSrc, setLogoSrc] = useState(
-    "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
-  );
+  const [logoSrc, setLogoSrc] = useState("/images/paramount-logo-light.png");
   const [isMounted, setIsMounted] = useState(false);
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
@@ -44,8 +42,8 @@ export function OrgSwitcher({
     if (isMounted) {
       setLogoSrc(
         resolvedTheme === "dark"
-          ? "https://res.cloudinary.com/diyyyav1i/image/upload/v1754036143/paramount-light_ta1kve.png"
-          : "https://www.paramount-land.com/lib/images/paramount-land-logo.png"
+          ? "/images/paramount-logo-dark.png"
+          : "/images/paramount-logo-light.png"
       );
     }
   }, [resolvedTheme, isMounted]);
@@ -60,9 +58,9 @@ export function OrgSwitcher({
           <div className="flex items-center justify-center">
             {isCollapsed ? (
               <img
-                src="https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg"
+                src="/images/logo_xhylzg.jpg"
                 alt="Paramount Land icon"
-                className="h-8 w-8 rounded-md"
+                className="h-8 w-8 rounded-md object-contain"
               />
             ) : (
               <img src={logoSrc} alt="Paramount Land logo" className="h-8" />

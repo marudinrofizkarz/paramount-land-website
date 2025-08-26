@@ -40,16 +40,16 @@ export function generateOrganizationSchema(baseUrl?: string) {
     "@type": "Organization",
     name: "Paramount Land",
     url: baseUrl || getBaseUrl(),
-    logo: "https://res.cloudinary.com/dx7xttb8a/image/upload/v1754146325/logo_xhylzg.jpg",
+    logo: "https://www.rizalparamountland.com/images/paramount-logo-dark.png",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+6281234567890",
       contactType: "customer service",
     },
     sameAs: [
-      "https://www.facebook.com/paramountland",
-      "https://www.instagram.com/paramountland",
-      "https://www.linkedin.com/company/paramount-land",
+      "https://www.facebook.com/rizalparamountland",
+      "https://www.instagram.com/rizalparamountland",
+      "https://www.linkedin.com/company/rizal-paramount-land",
     ],
     description:
       "Paramount Land - Building Homes and People with Heart. Premium property developer in Indonesia focused on creating meaningful living spaces and communities.",

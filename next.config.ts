@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  webpack: (config, { isServer }) => {
+    // Ignore the OpenTelemetry instrumentation critical dependency warnings
+    config.module = {
+      ...config.module,
+      exprContextCritical: false,
+    };
+    return config;
+  },
   // Improve development performance
   reactStrictMode: false, // Set to true only for final testing
   poweredByHeader: false,
@@ -37,13 +45,13 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "www.paramount-land.com",
+        hostname: "www.rizalparamountland.com",
         port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "paramount-land.com",
+        hostname: "rizalparamountland.com",
         port: "",
         pathname: "/**",
       },

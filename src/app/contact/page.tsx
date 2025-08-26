@@ -157,22 +157,22 @@ export default function ContactPage() {
   const socialLinks = [
     {
       icon: Facebook,
-      href: "https://facebook.com/paramountland",
+      href: "https://facebook.com/rizalparamountland",
       label: "Facebook",
     },
     {
       icon: Instagram,
-      href: "https://instagram.com/paramountland",
+      href: "https://instagram.com/rizalparamountland",
       label: "Instagram",
     },
     {
       icon: Linkedin,
-      href: "https://linkedin.com/company/paramount-land",
+      href: "https://linkedin.com/company/rizal-paramount-land",
       label: "LinkedIn",
     },
     {
       icon: Twitter,
-      href: "https://twitter.com/paramountland",
+      href: "https://twitter.com/rizalparamount",
       label: "Twitter",
     },
   ];
@@ -468,28 +468,28 @@ export default function ContactPage() {
                   <h3 className="font-semibold text-lg mb-4">Follow Us</h3>
                   <div className="grid grid-cols-4 gap-3">
                     <SocialLinkCard
-                      href="https://facebook.com/paramountland"
+                      href="https://facebook.com/rizalparamountland"
                       colorClass="from-blue-600 to-blue-500"
                     >
                       <Facebook size={24} />
                     </SocialLinkCard>
 
                     <SocialLinkCard
-                      href="https://instagram.com/paramountland"
+                      href="https://instagram.com/rizalparamountland"
                       colorClass="from-pink-500 to-orange-400"
                     >
                       <Instagram size={24} />
                     </SocialLinkCard>
 
                     <SocialLinkCard
-                      href="https://linkedin.com/company/paramount-land"
+                      href="https://linkedin.com/company/rizal-paramount-land"
                       colorClass="from-blue-600 to-blue-500"
                     >
                       <Linkedin size={24} />
                     </SocialLinkCard>
 
                     <SocialLinkCard
-                      href="https://twitter.com/paramountland"
+                      href="https://twitter.com/rizalparamount"
                       colorClass="from-cyan-500 to-blue-400"
                     >
                       <Twitter size={24} />

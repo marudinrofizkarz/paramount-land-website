@@ -189,7 +189,7 @@ export function Header({ projects }: { projects: Project[] }) {
                       alt="Paramount Land logo"
                       width={150}
                       height={40}
-                      className="mr-2"
+                      className="mr-2 h-auto w-auto max-h-[40px] max-w-[150px] object-contain"
                     />
                   </Link>
                 </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ExplicitMetadataTags } from "@/components/explicit-metadata-tags";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -87,7 +88,7 @@ export default function UnitDetailClient({
     if (projectsResponse.success) {
       setProjects(projectsResponse.data || []);
     }
-    
+
     setLoading(false);
   }, [unitResponse, projectsResponse]);
 
@@ -198,6 +199,17 @@ export default function UnitDetailClient({
     : [];
 
   // Gabungkan semua gambar untuk carousel
+
+  // Prepare metadata for social sharing
+  const unitImage =
+    main_image ||
+    (galleryImagesList.length > 0
+      ? galleryImagesList[0]
+      : "https://res.cloudinary.com/dwqiuq8cq/image/upload/v1755585343/Rizal_ok36fo.jpg");
+  const unitDescription = description
+    ? description.replace(/<[^>]*>/g, "").substring(0, 160) + "..."
+    : `${name} property details at ${project_name}, ${location}`;
+  const unitUrl = `https://www.rizalparamountland.com/projects/${slug}/units/${unitSlug}`;
   const allImages = [main_image, ...galleryImagesList].filter(Boolean);
 
   // Function untuk membuka modal dengan gambar tertentu
@@ -443,7 +455,7 @@ export default function UnitDetailClient({
                       <CardTitle>Deskripsi</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div 
+                      <div
                         className="prose prose-sm md:prose max-w-none prose-headings:text-foreground prose-p:text-muted-foreground"
                         dangerouslySetInnerHTML={{ __html: description || "" }}
                       />

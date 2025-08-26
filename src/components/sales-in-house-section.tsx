@@ -36,7 +36,7 @@ const salesPerson: SalesPersonProps = {
   image:
     "https://res.cloudinary.com/dwqiuq8cq/image/upload/v1755585343/Rizal_ok36fo.jpg",
   phone: "081387118533",
-  email: "rizal.sutanto@paramountland.com",
+  email: "rizal.sutanto@paramount-land.com",
   whatsapp: "6281387118533",
   description:
     "I'm dedicated to helping my clients find their perfect property. With extensive knowledge of the local real estate market and a commitment to personalized service, I ensure that every client receives the attention and expertise they deserve.",
