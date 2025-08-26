@@ -31,7 +31,10 @@ export default function SignInPage() {
           </p>
         </div>
         <SignIn
-          routing="hash"
+          routing="path"
+          redirectUrl="/dashboard"
+          afterSignInUrl="/dashboard"
+          path="/auth/sign-in"
           appearance={{
             elements: {
               rootBox: "mx-auto",
