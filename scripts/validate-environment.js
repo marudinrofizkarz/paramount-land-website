@@ -12,11 +12,6 @@ const requiredEnvVars = {
     TURSO_DATABASE_URL: "Database URL for Turso/LibSQL connection",
     TURSO_AUTH_TOKEN: "Authentication token for Turso database",
   },
-  auth: {
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
-      "Clerk publishable key for authentication",
-    CLERK_SECRET_KEY: "Clerk secret key for server-side authentication",
-  },
   cloudinary: {
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:
       "Cloudinary cloud name for image uploads",
@@ -35,6 +30,8 @@ const optionalEnvVars = {
     DATABASE_AUTH_TOKEN: "Legacy auth token (fallback for TURSO_AUTH_TOKEN)",
     CLOUDINARY_CLOUD_NAME:
       "Legacy Cloudinary cloud name (use NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME instead)",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "Deprecated - Clerk is no longer used",
+    CLERK_SECRET_KEY: "Deprecated - Clerk is no longer used",
   },
 };
 
