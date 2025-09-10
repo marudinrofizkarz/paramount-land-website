@@ -12,11 +12,12 @@ import {
   resetPasswordSchema,
   registerSchema,
 } from "./schemas";
+import { DATABASE_CONFIG } from "./env-config";
 
 // Konfigurasi database
 function getDbClient() {
-  const dbUrl = process.env.DATABASE_URL;
-  const authToken = process.env.DATABASE_AUTH_TOKEN;
+  const dbUrl = DATABASE_CONFIG.url;
+  const authToken = DATABASE_CONFIG.authToken;
 
   if (!dbUrl || !authToken) {
     throw new Error("DATABASE_URL dan DATABASE_AUTH_TOKEN harus diisi di .env");

@@ -3,11 +3,12 @@
 import { createClient } from "@libsql/client";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { DATABASE_CONFIG } from "./env-config";
 
 // Database client
 function getDbClient() {
-  const dbUrl = process.env.DATABASE_URL;
-  const authToken = process.env.DATABASE_AUTH_TOKEN;
+  const dbUrl = DATABASE_CONFIG.url;
+  const authToken = DATABASE_CONFIG.authToken;
 
   if (!dbUrl || !authToken) {
     throw new Error("DATABASE_URL dan DATABASE_AUTH_TOKEN harus diisi di .env");

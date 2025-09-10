@@ -1,9 +1,10 @@
 import { createClient } from "@libsql/client";
 import { v4 as uuidv4 } from "uuid";
+import { DATABASE_CONFIG } from "./env-config";
 
 const db = createClient({
-  url: process.env.DATABASE_URL as string,
-  authToken: process.env.DATABASE_AUTH_TOKEN,
+  url: DATABASE_CONFIG.url,
+  authToken: DATABASE_CONFIG.authToken,
 });
 
 // Landing Page Types
