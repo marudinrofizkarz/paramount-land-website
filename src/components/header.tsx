@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/accordion";
 import { Menu } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import type { Project } from "@/lib/types";
+import type { Project } from "@/types/project";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "./mode-toggle";
 import { useTheme } from "next-themes";

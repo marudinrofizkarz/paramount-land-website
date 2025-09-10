@@ -31,7 +31,7 @@ import {
 import { UserAvatarProfile } from "@/components/user-avatar-profile";
 import { navItems } from "@/constants/data";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/contexts/auth-context";
 import {
   IconBell,
   IconChevronRight,
@@ -41,7 +41,6 @@ import {
   IconPhotoUp,
   IconUserCircle,
 } from "@tabler/icons-react";
-import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
@@ -62,7 +61,7 @@ const tenants = [
 export default function AppSidebar() {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { user } = useUser();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
 
@@ -223,13 +222,14 @@ export default function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <SignOutButton redirectUrl="/auth/sign-in">
-                    <div className="flex items-center">
-                      <IconLogout className="mr-2 h-4 w-4" />
-                      <span>Logout</span>
-                    </div>
-                  </SignOutButton>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await logout();
+                    router.push("/auth/login");
+                  }}
+                >
+                  <IconLogout className="mr-2 h-4 w-4" />
+                  Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

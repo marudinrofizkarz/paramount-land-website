@@ -53,6 +53,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { UnitSidebarCards } from "@/components/unit-sidebar-cards";
 import { UnitPromoCard } from "@/components/unit-promo-card";
+import { CTASection } from "@/components/cta-section";
 
 export default function UnitDetailClient({
   unitResponse,
@@ -795,6 +796,17 @@ export default function UnitDetailClient({
               </Card>
             </div>
           </div>
+        </div>
+
+        {/* CTA Section - Added before Footer */}
+        <div className="mt-12">
+          <CTASection
+            title={`Jadikan ${name} Menjadi Milik Anda Sekarang`}
+            subtitle={`Investasi terbaik untuk masa depan Anda di ${project_name}. Konsultasikan kebutuhan Anda dengan tim kami.`}
+            bgImageUrl="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
+            buttonText="Hubungi Sales"
+            whatsappNumber="6281387118533"
+          />
         </div>
       </main>
       <Footer />

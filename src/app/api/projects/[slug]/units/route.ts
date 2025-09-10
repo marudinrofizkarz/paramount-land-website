@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const slug = params.slug;
+    const { slug } = await params;
 
     // Get project ID from slug first
     const projectResult = await fetch(`/api/projects/${slug}`);

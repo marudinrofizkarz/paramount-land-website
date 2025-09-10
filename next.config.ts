@@ -59,7 +59,6 @@ const baseConfig: NextConfig = {
     // Modern bundle optimizations
     optimizePackageImports: [
       "react-dom",
-      "@clerk/nextjs",
       "lucide-react",
       "@radix-ui/react-icons",
     ],
@@ -69,9 +68,14 @@ const baseConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [320, 480, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days for better caching
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days for hero images
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Cloudinary optimization
+    loader: "default",
+    // Enable placeholder blur for better UX
+    disableStaticImages: false,
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: "https",
@@ -106,6 +110,12 @@ const baseConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "via.placeholder.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
         port: "",
         pathname: "/**",
       },

@@ -1,25 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { WhatsAppButton } from "@/components/whatsapp-button";
+import { usePathname } from "next/navigation";
 
 /**
  * GlobalWhatsAppButton - Komponen wrapper untuk menampilkan WhatsApp button
  * di semua halaman website. Komponen ini harus dimasukkan ke layout utama.
  */
 export function GlobalWhatsAppButton() {
-  // Cek apakah saat ini di dashboard atau halaman admin
-  const isAdminPage = () => {
-    if (typeof window !== "undefined") {
-      return (
-        window.location.pathname.startsWith("/dashboard") ||
-        window.location.pathname.startsWith("/auth")
-      );
-    }
-    return false;
-  };
+  const pathname = usePathname();
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    // Cek apakah saat ini di dashboard atau halaman admin
+    const isAdminOrAuthPage =
+      pathname.startsWith("/dashboard") || pathname.startsWith("/auth");
+
+    setShouldRender(!isAdminOrAuthPage);
+  }, [pathname]);
 
   // Render kondisional: Jangan tampilkan di halaman admin/dashboard
-  if (isAdminPage()) {
+  if (!shouldRender) {
     return null;
   }
 

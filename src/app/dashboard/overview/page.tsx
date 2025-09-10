@@ -1,11 +1,12 @@
-import { Metadata } from 'next';
-import { DashboardOverview } from '@/features/dashboard/components/dashboard-overview';
+import { redirect } from "next/navigation";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Dashboard Overview | Paramount Land',
-  description: 'Overview dashboard for Paramount Land property management'
+  title: "Dashboard Overview | Paramount Land",
+  description: "Overview dashboard for Paramount Land property management",
 };
 
 export default function DashboardOverviewPage() {
-  return <DashboardOverview />;
-} 
+  // Redirect to main dashboard page since overview is now the default
+  redirect("/dashboard");
+}

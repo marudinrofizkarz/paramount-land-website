@@ -25,16 +25,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { 
-  MoreHorizontal, 
-  Eye, 
-  Trash2, 
-  Mail, 
+import {
+  MoreHorizontal,
+  Eye,
+  Trash2,
+  Mail,
   Phone,
   Calendar,
-  Filter
+  Filter,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
-import { updateInquiryStatus, deleteInquiry } from "@/lib/contact-inquiry-actions";
+import {
+  updateInquiryStatus,
+  deleteInquiry,
+} from "@/lib/contact-inquiry-actions";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -66,23 +72,46 @@ interface ContactInquiriesTableProps {
   currentStatus: string;
 }
 
-export function ContactInquiriesTable({ 
-  inquiries, 
-  pagination, 
-  currentStatus 
+export function ContactInquiriesTable({
+  inquiries,
+  pagination,
+  currentStatus,
 }: ContactInquiriesTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const router = useRouter();
 
+  const toggleRowExpansion = (id: string) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedRows(newExpanded);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'new':
-        return <Badge variant="default" className="bg-blue-500">New</Badge>;
-      case 'contacted':
-        return <Badge variant="default" className="bg-orange-500">Contacted</Badge>;
-      case 'closed':
-        return <Badge variant="default" className="bg-green-500">Closed</Badge>;
+      case "new":
+        return (
+          <Badge variant="default" className="bg-blue-500">
+            New
+          </Badge>
+        );
+      case "contacted":
+        return (
+          <Badge variant="default" className="bg-orange-500">
+            Contacted
+          </Badge>
+        );
+      case "closed":
+        return (
+          <Badge variant="default" className="bg-green-500">
+            Closed
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -90,13 +119,13 @@ export function ContactInquiriesTable({
 
   const getInquiryTypeBadge = (type: string) => {
     switch (type) {
-      case 'general':
+      case "general":
         return <Badge variant="outline">General</Badge>;
-      case 'pricing':
+      case "pricing":
         return <Badge variant="outline">Pricing</Badge>;
-      case 'visit':
+      case "visit":
         return <Badge variant="outline">Visit</Badge>;
-      case 'unit_specific':
+      case "unit_specific":
         return <Badge variant="outline">Unit Specific</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
@@ -139,10 +168,11 @@ export function ContactInquiriesTable({
     }
   };
 
-  const filteredInquiries = inquiries.filter(inquiry =>
-    inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    inquiry.project_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredInquiries = inquiries.filter(
+    (inquiry) =>
+      inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      inquiry.project_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -161,7 +191,7 @@ export function ContactInquiriesTable({
           value={currentStatus}
           onValueChange={(value) => {
             const params = new URLSearchParams();
-            if (value !== 'all') params.set('status', value);
+            if (value !== "all") params.set("status", value);
             router.push(`/dashboard/contact-inquiries?${params.toString()}`);
           }}
         >
@@ -185,6 +215,7 @@ export function ContactInquiriesTable({
               <TableHead>Customer</TableHead>
               <TableHead>Project</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Message</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -193,7 +224,7 @@ export function ContactInquiriesTable({
           <TableBody>
             {filteredInquiries.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   <div className="text-muted-foreground">
                     No inquiries found
                   </div>
@@ -228,13 +259,52 @@ export function ContactInquiriesTable({
                   <TableCell>
                     {getInquiryTypeBadge(inquiry.inquiry_type)}
                   </TableCell>
-                  <TableCell>
-                    {getStatusBadge(inquiry.status)}
+                  <TableCell className="max-w-xs">
+                    <div className="space-y-2">
+                      {inquiry.message && (
+                        <div className="text-sm">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="h-3 w-3 text-muted-foreground" />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="p-0 h-auto font-normal"
+                              onClick={() => toggleRowExpansion(inquiry.id)}
+                            >
+                              {expandedRows.has(inquiry.id) ? (
+                                <>
+                                  <ChevronUp className="h-3 w-3 mr-1" />
+                                  Hide message
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="h-3 w-3 mr-1" />
+                                  View message
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                          {expandedRows.has(inquiry.id) && (
+                            <div className="mt-2 p-2 bg-muted rounded-sm">
+                              <pre className="text-xs whitespace-pre-wrap font-sans">
+                                {inquiry.message}
+                              </pre>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {!inquiry.message && (
+                        <div className="text-xs text-muted-foreground italic">
+                          No message provided
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
+                  <TableCell>{getStatusBadge(inquiry.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-3 w-3" />
-                      {format(new Date(inquiry.created_at), 'MMM dd, yyyy')}
+                      {format(new Date(inquiry.created_at), "MMM dd, yyyy")}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -246,14 +316,18 @@ export function ContactInquiriesTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onClick={() => handleStatusChange(inquiry.id, 'contacted')}
-                          disabled={inquiry.status === 'contacted'}
+                          onClick={() =>
+                            handleStatusChange(inquiry.id, "contacted")
+                          }
+                          disabled={inquiry.status === "contacted"}
                         >
                           Mark as Contacted
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleStatusChange(inquiry.id, 'closed')}
-                          disabled={inquiry.status === 'closed'}
+                          onClick={() =>
+                            handleStatusChange(inquiry.id, "closed")
+                          }
+                          disabled={inquiry.status === "closed"}
                         >
                           Mark as Closed
                         </DropdownMenuItem>
@@ -278,8 +352,8 @@ export function ContactInquiriesTable({
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-            {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+            Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+            {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
             {pagination.total} inquiries
           </div>
           <div className="flex gap-2">
@@ -289,9 +363,12 @@ export function ContactInquiriesTable({
               disabled={pagination.page <= 1}
               onClick={() => {
                 const params = new URLSearchParams();
-                params.set('page', String(pagination.page - 1));
-                if (currentStatus !== 'all') params.set('status', currentStatus);
-                router.push(`/dashboard/contact-inquiries?${params.toString()}`);
+                params.set("page", String(pagination.page - 1));
+                if (currentStatus !== "all")
+                  params.set("status", currentStatus);
+                router.push(
+                  `/dashboard/contact-inquiries?${params.toString()}`
+                );
               }}
             >
               Previous
@@ -302,9 +379,12 @@ export function ContactInquiriesTable({
               disabled={pagination.page >= pagination.totalPages}
               onClick={() => {
                 const params = new URLSearchParams();
-                params.set('page', String(pagination.page + 1));
-                if (currentStatus !== 'all') params.set('status', currentStatus);
-                router.push(`/dashboard/contact-inquiries?${params.toString()}`);
+                params.set("page", String(pagination.page + 1));
+                if (currentStatus !== "all")
+                  params.set("status", currentStatus);
+                router.push(
+                  `/dashboard/contact-inquiries?${params.toString()}`
+                );
               }}
             >
               Next

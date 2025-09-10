@@ -23,10 +23,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useSweetAlert } from "@/hooks/use-sweet-alert";
 import { Loader2, Mail, Phone, User, MessageSquare } from "lucide-react";
-// Hapus import langsung dari server action
-// import { submitContactInquiry } from "@/lib/contact-inquiry-actions";
-import { serializeData } from "@/lib/serialization";
-import { submitContactInquiryWrapper } from "./contact-inquiry-wrapper";
+import { submitContactInquiry } from "@/lib/contact-inquiry-actions";
+// Removed dependency on contact-inquiry-wrapper.ts
 
 interface ContactInquiryModalProps {
   projectId: string;
@@ -80,13 +78,10 @@ export function ContactInquiryModal({
         unitSlug: unitSlug || null,
       };
 
-      // Gunakan wrapper untuk memanggil server action (tanpa perlu meneruskan fungsi server action)
-      const serializedResult = await submitContactInquiryWrapper(
-        null,
-        submissionData
-      );
+      // Call server action directly without wrapper
+      const result = await submitContactInquiry(submissionData);
 
-      if (serializedResult.success) {
+      if (result.success) {
         // Gunakan SweetAlert untuk notifikasi sukses
         await showSuccess(
           "Inquiry berhasil dikirim! Terima kasih atas minat Anda. Kami akan segera menghubungi Anda."
@@ -103,7 +98,7 @@ export function ContactInquiryModal({
       } else {
         // Gunakan SweetAlert untuk notifikasi error
         await showError(
-          serializedResult.error || "Gagal mengirim inquiry. Silakan coba lagi."
+          result.error || "Gagal mengirim inquiry. Silakan coba lagi."
         );
       }
     } catch (error) {

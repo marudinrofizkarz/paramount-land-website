@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Building, Home, MessageCircle, Users } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/contexts/auth-context";
 import { useState, useEffect } from "react";
 import { getProjects } from "@/lib/project-actions";
 import { getContactInquiries } from "@/lib/contact-inquiry-actions";
@@ -18,7 +18,7 @@ import { id } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function DashboardOverview() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [greeting, setGreeting] = useState("");
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -105,19 +105,9 @@ export function DashboardOverview() {
     fetchDashboardData();
   }, []);
 
-  // Get full name or username from Clerk user data
+  // Get full name from custom auth context
   const getFullName = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    } else if (user?.firstName) {
-      return user.firstName;
-    } else if (user?.fullName) {
-      return user.fullName;
-    } else if (user?.username) {
-      return user.username;
-    } else {
-      return "User";
-    }
+    return user?.name || "User";
   };
 
   // Format date for display

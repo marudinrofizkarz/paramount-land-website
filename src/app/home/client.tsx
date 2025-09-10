@@ -1,7 +1,5 @@
 "use client";
 
-import { getPublicProjects } from "@/lib/project-actions";
-import { getPublishedNews } from "@/lib/news-actions";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -11,7 +9,8 @@ import { NewsSlider } from "@/components/news-slider";
 import { SalesInHouseSection } from "@/components/sales-in-house-section";
 import { FaqSection } from "@/components/faq-section";
 import { useEffect, useState } from "react";
-import type { Project } from "@/lib/types";
+import type { Project as LibProject } from "@/lib/types";
+import type { Project as HeaderProject } from "@/types/project";
 import { ExplicitMetadataTags } from "@/components/explicit-metadata-tags";
 
 // API response NewsItem
@@ -40,87 +39,136 @@ interface NewsDisplayItem {
   slug: string;
 }
 
-export default function HomeClient() {
-  const [residentialProjects, setResidentialProjects] = useState<Project[]>([]);
-  const [commercialProjects, setCommercialProjects] = useState<Project[]>([]);
+// Conversion function to transform LibProject to HeaderProject
+const convertToHeaderProject = (
+  project: LibProject,
+  projectType: "residential" | "commercial"
+): HeaderProject => {
+  return {
+    id: project.id,
+    name: project.name,
+    slug: project.slug,
+    location: project.location,
+    description: project.description,
+    status: projectType,
+    units: project.units?.length || 0,
+    startingPrice: project.startingPrice,
+    maxPrice: undefined,
+    completion: 0, // Default value, should be properly set if available
+    mainImage: project.mainImage,
+    galleryImages: project.galleryImages || [],
+    brochureUrl: project.brochureUrl,
+    youtubeLink: project.youtubeUrl,
+    advantages: [], // Default value, should be properly set if available
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+};
+
+export default function HomeClient({
+  initialResidentialProjects,
+  initialCommercialProjects,
+  initialNews,
+}: {
+  initialResidentialProjects: any;
+  initialCommercialProjects: any;
+  initialNews: any;
+}) {
+  const [residentialProjects, setResidentialProjects] = useState<LibProject[]>(
+    []
+  );
+  const [commercialProjects, setCommercialProjects] = useState<LibProject[]>(
+    []
+  );
   const [newsData, setNewsData] = useState<NewsDisplayItem[]>([]);
-  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [allProjects, setAllProjects] = useState<HeaderProject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
 
-        // Fetch residential projects
-        const residentialResponse = await getPublicProjects(
-          undefined,
-          "residential"
-        );
-        if (residentialResponse.success && residentialResponse.data) {
-          setResidentialProjects(residentialResponse.data);
-        }
-
-        // Fetch commercial projects
-        const commercialResponse = await getPublicProjects(
-          undefined,
-          "commercial"
-        );
-        if (commercialResponse.success && commercialResponse.data) {
-          setCommercialProjects(commercialResponse.data);
-        }
-
-        // Combine all projects for the header
-        const combined = [
-          ...(residentialResponse.success ? residentialResponse.data : []),
-          ...(commercialResponse.success ? commercialResponse.data : []),
-        ];
-        setAllProjects(combined);
-
-        // Fetch published news
-        const newsResponse = await getPublishedNews();
-        if (newsResponse.success && newsResponse.data) {
-          // Transform news data to match NewsSlider interface
-          const transformedNews = newsResponse.data.map((news: any) => ({
-            id: news.id,
-            title: news.title,
-            description: news.description,
-            category: news.category,
-            date: news.published_at
-              ? new Date(news.published_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
-              : "No date",
-            icon: news.icon || "📰",
-            bgColor: news.bg_color || "bg-gray-100 dark:bg-gray-800",
-            featured_image: news.featured_image,
-            slug: news.slug || news.id,
-          }));
-          setNewsData(transformedNews as NewsDisplayItem[]);
-        }
-
-        if (
-          residentialResponse.success &&
-          commercialResponse.success &&
-          newsResponse.success
-        ) {
-          setError(null);
-        } else {
-          setError("Failed to load data");
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to load data");
-      } finally {
-        setLoading(false);
+      // Process residential projects data from props
+      if (
+        initialResidentialProjects &&
+        initialResidentialProjects.success &&
+        initialResidentialProjects.data
+      ) {
+        const residentialProjectsData =
+          initialResidentialProjects.data as LibProject[];
+        setResidentialProjects(residentialProjectsData);
       }
-    }
 
-    fetchData();
-  }, []);
+      // Process commercial projects data from props
+      if (
+        initialCommercialProjects &&
+        initialCommercialProjects.success &&
+        initialCommercialProjects.data
+      ) {
+        const commercialProjectsData =
+          initialCommercialProjects.data as LibProject[];
+        setCommercialProjects(commercialProjectsData);
+      }
+
+      // Combine all projects for header
+      const allProjectsData = [];
+
+      if (
+        initialResidentialProjects &&
+        initialResidentialProjects.success &&
+        initialResidentialProjects.data
+      ) {
+        const residentialData = initialResidentialProjects.data.map(
+          (project: LibProject) =>
+            convertToHeaderProject(project, "residential")
+        );
+        allProjectsData.push(...residentialData);
+      }
+
+      if (
+        initialCommercialProjects &&
+        initialCommercialProjects.success &&
+        initialCommercialProjects.data
+      ) {
+        const commercialData = initialCommercialProjects.data.map(
+          (project: LibProject) => convertToHeaderProject(project, "commercial")
+        );
+        allProjectsData.push(...commercialData);
+      }
+
+      setAllProjects(allProjectsData);
+
+      // Process news data from props
+      if (initialNews && initialNews.success && initialNews.data) {
+        const newsItems = initialNews.data.map((item: NewsItemResponse) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          date: item.published_at
+            ? new Date(item.published_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "No date",
+          icon: item.icon || "📰",
+          bgColor: item.bg_color || "bg-gray-100 dark:bg-gray-800",
+          featured_image: item.featured_image,
+          slug: item.slug || item.id,
+        }));
+        setNewsData(newsItems);
+      }
+
+      setError(null);
+    } catch (err) {
+      console.error("Error processing initial data:", err);
+      setError("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  }, [initialResidentialProjects, initialCommercialProjects, initialNews]);
 
   if (loading) {
     return (

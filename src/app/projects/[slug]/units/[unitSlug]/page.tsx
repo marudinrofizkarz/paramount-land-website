@@ -10,7 +10,8 @@ export async function generateMetadata({
   params: { slug: string; unitSlug: string };
 }): Promise<Metadata> {
   // Get the unit data
-  const unitResponse = await getUnitBySlug(params.slug, params.unitSlug);
+  const { slug, unitSlug } = await params;
+  const unitResponse = await getUnitBySlug(slug, unitSlug);
   const unit = unitResponse.success ? unitResponse.unit : null;
 
   // Set image URL for sharing
@@ -29,7 +30,7 @@ export async function generateMetadata({
       ? unit.description.replace(/<[^>]*>/g, "").substring(0, 160) + "..."
       : "Property unit details and specifications",
     image: imageUrl,
-    canonical: `https://www.rizalparamountland.com/projects/${params.slug}/units/${params.unitSlug}`,
+    canonical: `https://www.rizalparamountland.com/projects/${slug}/units/${unitSlug}`,
   });
 }
 
@@ -39,7 +40,8 @@ export default async function UnitDetailPage({
   params: { slug: string; unitSlug: string };
 }) {
   // Fetch data on the server
-  const unitResponse = await getUnitBySlug(params.slug, params.unitSlug);
+  const { slug, unitSlug } = await params;
+  const unitResponse = await getUnitBySlug(slug, unitSlug);
   const projectsResponse = await getPublicProjects();
 
   // Pass the data to the client component
@@ -47,7 +49,7 @@ export default async function UnitDetailPage({
     <UnitDetailClient
       unitResponse={unitResponse}
       projectsResponse={projectsResponse}
-      params={params}
+      params={{ slug, unitSlug }}
     />
   );
 }

@@ -51,9 +51,14 @@ export function Footer() {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const { data = [], success } = await getPublicWebsiteMenus();
-        if (success) {
-          setMenus(data);
+        const response = await getPublicWebsiteMenus();
+        if (response && response.success) {
+          setMenus(response.data || []);
+        } else {
+          console.error(
+            "Failed to fetch menus:",
+            response?.message || "Unknown error"
+          );
         }
       } catch (error) {
         console.error("Error fetching footer menus:", error);

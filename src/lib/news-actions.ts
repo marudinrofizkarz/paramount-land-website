@@ -164,13 +164,13 @@ export async function deleteNews(id: string) {
 
 export async function getAllNews() {
   try {
-    const result = await db.execute({
-      sql: 'SELECT * FROM news ORDER BY created_at DESC',
-      args: [],
-    });
+    // Import helper functions from database
+    const { getMany } = await import('@/lib/database');
+    
+    const newsData = await getMany('SELECT * FROM news ORDER BY created_at DESC', []);
 
     // Convert date fields to strings to avoid serialization issues
-    const serializedData = result.rows.map((row: any) => ({
+    const serializedData = newsData.map((row: any) => ({
       ...row,
       published_at: row.published_at ? new Date(row.published_at).toISOString() : null,
       created_at: new Date(row.created_at).toISOString(),
@@ -183,28 +183,28 @@ export async function getAllNews() {
     };
   } catch (error) {
     console.error('Error fetching news:', error);
-    return { success: false, error: 'Failed to fetch news' };
+    return { success: false, message: 'Failed to fetch news', data: [] };
   }
 }
 
 export async function getPublishedNews(page = 1, limit = 9) {
   try {
-    // Get total count for pagination
-    const countResult = await db.execute({
-      sql: 'SELECT COUNT(*) as total FROM news WHERE is_published = true',
-      args: [],
-    });
+    // Import helper functions from database
+    const { query, getMany } = await import('@/lib/database');
     
+    // Get total count for pagination
+    const countResult = await query('SELECT COUNT(*) as total FROM news WHERE is_published = true', []);
     const total = countResult.rows[0].total as number;
     const offset = (page - 1) * limit;
     
-    const result = await db.execute({
-      sql: 'SELECT * FROM news WHERE is_published = true ORDER BY published_at DESC LIMIT ? OFFSET ?',
-      args: [limit, offset],
-    });
+    // Get published news with pagination
+    const newsData = await getMany(
+      'SELECT * FROM news WHERE is_published = true ORDER BY published_at DESC LIMIT ? OFFSET ?',
+      [limit, offset]
+    );
 
     // Convert date fields to strings to avoid serialization issues
-    const serializedData = result.rows.map((row: any) => ({
+    const serializedData = newsData.map((row: any) => ({
       ...row,
       published_at: row.published_at ? new Date(row.published_at).toISOString() : null,
       created_at: new Date(row.created_at).toISOString(),
@@ -223,22 +223,21 @@ export async function getPublishedNews(page = 1, limit = 9) {
     };
   } catch (error) {
     console.error('Error fetching published news:', error);
-    return { success: false, error: 'Failed to fetch published news' };
+    return { success: false, message: 'Failed to fetch published news', data: [] };
   }
 }
 
 export async function getNewsById(id: string) {
   try {
-    const result = await db.execute({
-      sql: 'SELECT * FROM news WHERE id = ?',
-      args: [id],
-    });
+    // Import helper functions from database
+    const { getOne } = await import('@/lib/database');
+    
+    const row = await getOne('SELECT * FROM news WHERE id = ?', [id]);
 
-    if (result.rows.length === 0) {
-      return { success: false, error: 'News not found' };
+    if (!row) {
+      return { success: false, message: 'News not found' };
     }
 
-    const row = result.rows[0] as any;
     const serializedData = {
       ...row,
       published_at: row.published_at ? new Date(row.published_at).toISOString() : null,
@@ -249,22 +248,21 @@ export async function getNewsById(id: string) {
     return { success: true, data: serializedData };
   } catch (error) {
     console.error('Error fetching news by ID:', error);
-    return { success: false, error: 'Failed to fetch news' };
+    return { success: false, message: 'Failed to fetch news' };
   }
 }
 
 export async function getNewsBySlug(slug: string) {
   try {
-    const result = await db.execute({
-      sql: 'SELECT * FROM news WHERE slug = ?',
-      args: [slug],
-    });
+    // Import helper functions from database
+    const { getOne } = await import('@/lib/database');
+    
+    const row = await getOne('SELECT * FROM news WHERE slug = ?', [slug]);
 
-    if (result.rows.length === 0) {
-      return { success: false, error: 'News not found' };
+    if (!row) {
+      return { success: false, message: 'News not found' };
     }
 
-    const row = result.rows[0] as any;
     const serializedData = {
       ...row,
       published_at: row.published_at ? new Date(row.published_at).toISOString() : null,
@@ -275,7 +273,7 @@ export async function getNewsBySlug(slug: string) {
     return { success: true, data: serializedData };
   } catch (error) {
     console.error('Error fetching news by slug:', error);
-    return { success: false, error: 'Failed to fetch news' };
+    return { success: false, message: 'Failed to fetch news' };
   }
 }
 

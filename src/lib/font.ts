@@ -1,9 +1,9 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Instrument_Sans, Geist_Mono } from "next/font/google";
 
 import { cn } from "@/lib/utils";
 
 // Further optimize font loading for performance
-const fontSans = Geist({
+const fontSans = Instrument_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",

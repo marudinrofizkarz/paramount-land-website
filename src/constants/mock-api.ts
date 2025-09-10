@@ -2,8 +2,7 @@
 // 🛑 Nothing in here has anything to do with Nextjs, it's just a fake database
 ////////////////////////////////////////////////////////////////////////////////
 
-import { faker } from '@faker-js/faker';
-import { matchSorter } from 'match-sorter'; // For filtering
+import { matchSorter } from "match-sorter"; // For filtering
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,37 +25,58 @@ export const fakeProducts = {
 
   // Initialize with sample data
   initialize() {
-    const sampleProducts: Product[] = [];
-    function generateRandomProductData(id: number): Product {
-      const categories = [
-        'Electronics',
-        'Furniture',
-        'Clothing',
-        'Toys',
-        'Groceries',
-        'Books',
-        'Jewelry',
-        'Beauty Products'
-      ];
-
-      return {
-        id,
-        name: faker.commerce.productName(),
-        description: faker.commerce.productDescription(),
-        created_at: faker.date
-          .between({ from: '2022-01-01', to: '2023-12-31' })
-          .toISOString(),
-        price: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-        photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
-        category: faker.helpers.arrayElement(categories),
-        updated_at: faker.date.recent().toISOString()
-      };
-    }
-
-    // Generate remaining records
-    for (let i = 1; i <= 20; i++) {
-      sampleProducts.push(generateRandomProductData(i));
-    }
+    const sampleProducts: Product[] = [
+      {
+        id: 1,
+        name: "Sample Product 1",
+        description: "High-quality sample product for testing purposes",
+        created_at: "2023-01-15T10:30:00.000Z",
+        price: 29.99,
+        photo_url: "https://api.slingacademy.com/public/sample-products/1.png",
+        category: "Electronics",
+        updated_at: "2023-12-01T08:15:00.000Z",
+      },
+      {
+        id: 2,
+        name: "Sample Product 2",
+        description: "Another great sample product for demonstration",
+        created_at: "2023-02-20T14:45:00.000Z",
+        price: 15.5,
+        photo_url: "https://api.slingacademy.com/public/sample-products/2.png",
+        category: "Furniture",
+        updated_at: "2023-11-15T16:30:00.000Z",
+      },
+      {
+        id: 3,
+        name: "Sample Product 3",
+        description: "Premium sample product with excellent features",
+        created_at: "2023-03-10T09:20:00.000Z",
+        price: 45.75,
+        photo_url: "https://api.slingacademy.com/public/sample-products/3.png",
+        category: "Clothing",
+        updated_at: "2023-10-20T12:45:00.000Z",
+      },
+      {
+        id: 4,
+        name: "Sample Product 4",
+        description: "Affordable sample product for everyday use",
+        created_at: "2023-04-05T16:10:00.000Z",
+        price: 8.99,
+        photo_url: "https://api.slingacademy.com/public/sample-products/4.png",
+        category: "Toys",
+        updated_at: "2023-09-30T11:20:00.000Z",
+      },
+      {
+        id: 5,
+        name: "Sample Product 5",
+        description: "Professional grade sample product for advanced users",
+        created_at: "2023-05-12T11:55:00.000Z",
+        price: 125.0,
+        photo_url: "https://api.slingacademy.com/public/sample-products/5.png",
+        category: "Electronics",
+        updated_at: "2023-08-25T14:10:00.000Z",
+      },
+    ];
 
     this.records = sampleProducts;
   },
@@ -64,7 +84,7 @@ export const fakeProducts = {
   // Get all products with optional category filtering and search
   async getAll({
     categories = [],
-    search
+    search,
   }: {
     categories?: string[];
     search?: string;
@@ -81,7 +101,7 @@ export const fakeProducts = {
     // Search functionality across multiple fields
     if (search) {
       products = matchSorter(products, search, {
-        keys: ['name', 'description', 'category']
+        keys: ["name", "description", "category"],
       });
     }
 
@@ -93,7 +113,7 @@ export const fakeProducts = {
     page = 1,
     limit = 10,
     categories,
-    search
+    search,
   }: {
     page?: number;
     limit?: number;
@@ -101,10 +121,10 @@ export const fakeProducts = {
     search?: string;
   }) {
     await delay(1000);
-    const categoriesArray = categories ? categories.split('.') : [];
+    const categoriesArray = categories ? categories.split(".") : [];
     const allProducts = await this.getAll({
       categories: categoriesArray,
-      search
+      search,
     });
     const totalProducts = allProducts.length;
 
@@ -119,11 +139,11 @@ export const fakeProducts = {
     return {
       success: true,
       time: currentTime,
-      message: 'Sample data for testing and learning purposes',
+      message: "Sample data for testing and learning purposes",
       total_products: totalProducts,
       offset,
       limit,
-      products: paginatedProducts
+      products: paginatedProducts,
     };
   },
 
@@ -137,7 +157,7 @@ export const fakeProducts = {
     if (!product) {
       return {
         success: false,
-        message: `Product with ID ${id} not found`
+        message: `Product with ID ${id} not found`,
       };
     }
 
@@ -148,9 +168,9 @@ export const fakeProducts = {
       success: true,
       time: currentTime,
       message: `Product with ID ${id} found`,
-      product
+      product,
     };
-  }
+  },
 };
 
 // Initialize sample products

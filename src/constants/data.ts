@@ -15,7 +15,7 @@ export type Product = {
 export const navItems: NavItem[] = [
   {
     title: "Dashboard",
-    url: "/dashboard/overview",
+    url: "/dashboard",
     icon: "dashboard",
     isActive: false,
     shortcut: ["d", "d"],
@@ -38,6 +38,14 @@ export const navItems: NavItem[] = [
     items: [], // No child items
   },
   {
+    title: "Landing Pages",
+    url: "/dashboard/landing-pages",
+    icon: "page",
+    shortcut: ["l", "p"],
+    isActive: false,
+    items: [], // No child items
+  },
+  {
     title: "Projects",
     url: "/dashboard/projects",
     icon: "product",
@@ -45,7 +53,7 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [], // No child items
   },
-  // {  
+  // {
   //   title: "Account",
   //   url: "#", // Placeholder as there is no direct link for the parent
   //   icon: "billing",
@@ -58,12 +66,12 @@ export const navItems: NavItem[] = [
   //       icon: "userPen",
   //       shortcut: ["m", "m"],
   //     },
-      // {
-      //   title: "Logout",
-      //   shortcut: ["l", "l"],
-      //   url: "/auth/sign-in",
-      //   icon: "login",
-      // },
+  // {
+  //   title: "Logout",
+  //   shortcut: ["l", "l"],
+  //   url: "/auth/sign-in",
+  //   icon: "login",
+  // },
   //   ],
   // },
   {

@@ -121,6 +121,14 @@ export async function getPublicWebsiteMenus() {
       'SELECT * FROM WebsiteMenu WHERE isActive = 1 ORDER BY "order" ASC'
     );
 
+    if (!menus) {
+      return {
+        success: false,
+        message: "No menus found",
+        data: [], // Always include empty data array if no menus
+      };
+    }
+
     // Convert boolean fields
     const formattedMenus = menus.map((menu: any) => ({
       ...menu,
@@ -137,6 +145,7 @@ export async function getPublicWebsiteMenus() {
     return {
       success: false,
       message: "Database Error: Failed to Fetch Website Menus.",
+      data: [], // Always include empty data array when error occurs
     };
   }
 }
@@ -188,7 +197,7 @@ export async function updateWebsiteMenu(id: string, formData: FormData) {
         "SELECT id FROM WebsiteMenu WHERE id = ?",
         [parentId]
       );
-      
+
       if (!parentExists) {
         return {
           success: false,

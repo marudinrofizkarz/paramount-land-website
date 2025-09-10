@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { MenuTreeItem } from "@/types/website-menu";
-import { getPublicWebsiteMenus } from "@/lib/website-menu-actions";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 
@@ -33,9 +32,22 @@ export function WebsiteNavigation({ className = "" }: WebsiteNavigationProps) {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const { data = [], success } = await getPublicWebsiteMenus();
-        if (success) {
-          setMenus(data);
+        const response = await fetch("/api/website-menu");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const responseData = await response.json();
+
+        // Ensure responseData is not undefined before accessing properties
+        if (responseData) {
+          const data = responseData.data || [];
+          const success = responseData.success || false;
+
+          if (success) {
+            setMenus(data);
+          }
+        } else {
+          console.error("Invalid response from server");
         }
       } catch (error) {
         console.error("Error fetching menus:", error);
@@ -356,11 +368,25 @@ export function useWebsiteMenus() {
     const fetchMenus = async () => {
       try {
         setLoading(true);
-        const { data = [], success, message } = await getPublicWebsiteMenus();
-        if (success) {
-          setMenus(data);
+        const response = await fetch("/api/website-menu");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const responseData = await response.json();
+
+        // Ensure responseData is not undefined before accessing properties
+        if (responseData) {
+          const data = responseData.data || [];
+          const success = responseData.success || false;
+          const message = responseData.message || "Unknown error";
+
+          if (success) {
+            setMenus(data);
+          } else {
+            setError(message);
+          }
         } else {
-          setError(message || "Failed to fetch menus");
+          setError("Invalid response from server");
         }
       } catch (err) {
         setError("Error fetching menus");

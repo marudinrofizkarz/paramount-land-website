@@ -1,4 +1,3 @@
-import KBar from "@/components/kbar";
 import AppSidebar from "@/components/layout/app-sidebar";
 import Header from "@/components/layout/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -28,25 +27,23 @@ export default async function DashboardLayout({
 
   return (
     <ActiveThemeProvider initialTheme={activeTheme}>
-      <KBar>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <div className="flex h-screen w-full overflow-hidden dashboard-layout">
-            <AppSidebar />
-            <SidebarInset className="flex flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-                {children}
-              </main>
-              <footer className="border-t py-4 px-4 md:px-6 text-center text-xs text-muted-foreground bg-background shrink-0">
-                <p>
-                  © {new Date().getFullYear()} Paramount Land. All rights
-                  reserved. • App Version: {packageJson.version}
-                </p>
-              </footer>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
-      </KBar>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <div className="flex h-screen w-full overflow-hidden dashboard-layout">
+          <AppSidebar />
+          <SidebarInset className="flex flex-col overflow-hidden">
+            <Header />
+            <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+              {children}
+            </main>
+            <footer className="border-t py-4 px-4 md:px-6 text-center text-xs text-muted-foreground bg-background shrink-0">
+              <p>
+                © {new Date().getFullYear()} Paramount Land. All rights
+                reserved. • App Version: {packageJson.version}
+              </p>
+            </footer>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
     </ActiveThemeProvider>
   );
 }

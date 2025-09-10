@@ -1,12 +1,20 @@
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { getServerUser } from '@/lib/auth-server';
+import { DashboardOverview } from '@/features/dashboard/components/dashboard-overview';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard | Paramount Land',
+  description: 'Dashboard overview for Paramount Land property management'
+};
 
 export default async function Dashboard() {
-  const { userId } = await auth();
+  const user = await getServerUser();
 
-  if (!userId) {
-    return redirect('/auth/sign-in');
-  } else {
-    redirect('/dashboard/overview');
+  if (!user) {
+    redirect('/auth/login');
+    return;
   }
+  
+  return <DashboardOverview />;
 }

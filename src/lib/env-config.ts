@@ -10,14 +10,6 @@ export const DATABASE_CONFIG = {
     process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN || "",
 };
 
-// Clerk Authentication Configuration
-export const CLERK_CONFIG = {
-  publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
-  secretKey: process.env.CLERK_SECRET_KEY || "",
-  signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/auth/sign-in",
-  signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL || "/auth/sign-up",
-};
-
 // Cloudinary Configuration
 export const CLOUDINARY_CONFIG = {
   cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "",
@@ -47,14 +39,6 @@ export function validateEnvironmentVariables() {
 
   if (!DATABASE_CONFIG.authToken) {
     errors.push("TURSO_AUTH_TOKEN is missing");
-  }
-
-  if (!CLERK_CONFIG.publishableKey) {
-    errors.push("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is missing");
-  }
-
-  if (!CLERK_CONFIG.secretKey) {
-    errors.push("CLERK_SECRET_KEY is missing");
   }
 
   if (!CLOUDINARY_CONFIG.cloudName) {

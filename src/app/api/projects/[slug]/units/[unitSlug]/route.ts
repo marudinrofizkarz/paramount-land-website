@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { slug: string; unitSlug: string } }
 ) {
   try {
-    const { slug, unitSlug } = params;
+    const { slug, unitSlug } = await params;
     const result = await getUnitBySlug(slug, unitSlug);
 
     if (result.success) {

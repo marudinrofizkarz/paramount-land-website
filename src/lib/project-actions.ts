@@ -21,6 +21,20 @@ async function fileToBase64(file: File): Promise<string> {
   }
 }
 
+// Safe JSON parse with fallback
+function safeJsonParse(
+  jsonString: string | null | undefined,
+  fallback: any = null
+): any {
+  if (!jsonString) return fallback;
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
+    return fallback;
+  }
+}
+
 // Create a new project
 export async function createProject(formData: FormData) {
   try {
@@ -168,13 +182,10 @@ export async function createProject(formData: FormData) {
       throw new Error("Project was created but could not be retrieved");
     }
 
-    // Ensure proper serialization - Convert to plain object and parse JSON fields
-    const plainProject = JSON.parse(JSON.stringify(project));
-    const formattedProject = {
-      ...plainProject,
-      galleryImages: JSON.parse((plainProject.galleryImages as string) || "[]"),
-      advantages: JSON.parse((plainProject.advantages as string) || "[]"),
-    };
+    // Ensure proper serialization - Create a clean object and parse JSON fields
+    const formattedProject = { ...project };
+    formattedProject.galleryImages = safeJsonParse(project.galleryImages, []);
+    formattedProject.advantages = safeJsonParse(project.advantages, []);
 
     console.log("Project creation completed successfully");
     revalidatePath("/dashboard/projects");
@@ -213,13 +224,17 @@ export async function getProjects(page = 1, limit = 10) {
       [limit, offset]
     );
 
-    // Ensure proper serialization for client components
-    // Import the serializeData function
-    const { serializeData } = await import("@/lib/database");
-    const serializedProjects = serializeData(projects);
+    // Process projects manually to ensure proper data format
+    const processedProjects = projects.map((project) => {
+      // Create a fresh object with all properties
+      const cleanProject = { ...project };
+
+      // Return the processed project
+      return cleanProject;
+    });
 
     const response: PaginatedProjects = {
-      projects: serializedProjects as unknown as ProjectListItem[],
+      projects: processedProjects as unknown as ProjectListItem[],
       total,
       page,
       limit,
@@ -239,24 +254,39 @@ export async function getProjects(page = 1, limit = 10) {
 // Get a single project by ID
 export async function getProjectById(id: string) {
   try {
-    const project = await getOne("SELECT * FROM Project WHERE id = ?", [id]);
+    // Get raw data directly
+    const result = await query("SELECT * FROM Project WHERE id = ?", [id]);
 
-    if (!project) {
+    if (!result.rows || result.rows.length === 0) {
       return {
         success: false,
         message: "Project not found.",
       };
     }
 
-    // Ensure proper serialization - Convert to plain object and parse JSON fields
-    const plainProject = JSON.parse(JSON.stringify(project));
-    const formattedProject = {
-      ...plainProject,
-      galleryImages: JSON.parse((plainProject.galleryImages as string) || "[]"),
-      advantages: JSON.parse((plainProject.advantages as string) || "[]"),
-    };
+    // Get the first row as our project
+    const rawProject = result.rows[0];
 
-    return { success: true, data: formattedProject };
+    if (!rawProject) {
+      return {
+        success: false,
+        message: "Project not found.",
+      };
+    }
+
+    // Create a clean object with proper typing
+    const cleanProject: Record<string, any> = {};
+
+    // Copy all properties manually to avoid serialization issues
+    Object.keys(rawProject).forEach((key) => {
+      cleanProject[key] = rawProject[key];
+    });
+
+    // Process JSON fields separately and safely
+    cleanProject.galleryImages = safeJsonParse(rawProject.galleryImages, []);
+    cleanProject.advantages = safeJsonParse(rawProject.advantages, []);
+
+    return { success: true, data: cleanProject };
   } catch (error) {
     console.error("Error fetching project:", error);
     return {
@@ -270,12 +300,19 @@ export async function getProjectById(id: string) {
 export async function getProjectBySlug(slug: string) {
   try {
     console.log("getProjectBySlug called with slug:", slug);
-    const project = await getOne("SELECT * FROM Project WHERE slug = ?", [
-      slug,
-    ]);
-    console.log("Database query result:", project);
 
-    if (!project) {
+    if (!slug || typeof slug !== "string") {
+      console.error("Invalid slug provided:", slug);
+      return {
+        success: false,
+        message: "Invalid slug parameter.",
+      };
+    }
+
+    // Get raw data directly without using serializeData initially
+    const result = await query("SELECT * FROM Project WHERE slug = ?", [slug]);
+
+    if (!result || !result.rows || result.rows.length === 0) {
       console.log("No project found with slug:", slug);
       return {
         success: false,
@@ -283,23 +320,42 @@ export async function getProjectBySlug(slug: string) {
       };
     }
 
-    // Parse JSON fields
-    const plainProject = JSON.parse(JSON.stringify(project));
-    const formattedProject = {
-      ...plainProject,
-      galleryImages: JSON.parse((plainProject.galleryImages as string) || "[]"),
-      advantages: JSON.parse((plainProject.advantages as string) || "[]"),
+    // Get the first row as our project
+    const rawProject = result.rows[0];
+    console.log("Raw project data found:", rawProject ? "yes" : "no");
+
+    if (!rawProject) {
+      console.log("Project is null or undefined");
+      return {
+        success: false,
+        message: "Project not found.",
+      };
+    }
+
+    // Create a clean object with proper typing
+    const cleanProject: Record<string, any> = {};
+
+    // Copy all properties manually to avoid serialization issues
+    Object.keys(rawProject).forEach((key) => {
+      cleanProject[key] = rawProject[key];
+    });
+
+    // Process JSON fields separately and safely
+    cleanProject.galleryImages = safeJsonParse(rawProject.galleryImages, []);
+    cleanProject.advantages = safeJsonParse(rawProject.advantages, []);
+
+    console.log("Project data processed successfully");
+
+    return {
+      success: true,
+      data: cleanProject,
     };
-
-    // Import the serializeData function to ensure proper serialization
-    const { serializeData } = await import("@/lib/database");
-
-    return { success: true, data: serializeData(formattedProject) };
   } catch (error) {
     console.error("Error fetching project:", error);
     return {
       success: false,
       message: "Database Error: Failed to Fetch Project.",
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
@@ -308,16 +364,16 @@ export async function getProjectBySlug(slug: string) {
 export async function updateProject(id: string, formData: FormData) {
   try {
     // Get existing project
-    const existingProject = await getOne("SELECT * FROM Project WHERE id = ?", [
-      id,
-    ]);
+    const existingProjectResponse = await getProjectById(id);
 
-    if (!existingProject) {
+    if (!existingProjectResponse.success || !existingProjectResponse.data) {
       return {
         success: false,
         message: "Project not found.",
       };
     }
+
+    const existingProject = existingProjectResponse.data;
 
     const name = formData.get("name") as string;
     const slug = formData.get("slug") as string;
@@ -341,9 +397,10 @@ export async function updateProject(id: string, formData: FormData) {
     }
 
     // Handle gallery images (need to check which ones to keep)
-    let galleryImages = JSON.parse(
-      (existingProject.galleryImages as string) || "[]"
-    ) as string[];
+    let galleryImages = Array.isArray(existingProject.galleryImages)
+      ? existingProject.galleryImages
+      : safeJsonParse(existingProject.galleryImages, []);
+
     const keepImages = formData
       .getAll("keepGalleryImages")
       .map((i) => i.toString());
@@ -410,23 +467,20 @@ export async function updateProject(id: string, formData: FormData) {
     );
 
     // Get updated record
-    const updatedProject = await getOne("SELECT * FROM Project WHERE id = ?", [
-      id,
-    ]);
+    const updatedProjectResponse = await getProjectById(id);
 
-    // Parse JSON fields and ensure proper serialization
-    const plainProject = JSON.parse(JSON.stringify(updatedProject));
-    const formattedProject = {
-      ...plainProject,
-      galleryImages: JSON.parse((plainProject.galleryImages as string) || "[]"),
-      advantages: JSON.parse((plainProject.advantages as string) || "[]"),
-    };
+    if (!updatedProjectResponse.success || !updatedProjectResponse.data) {
+      return {
+        success: false,
+        message: "Failed to retrieve updated project.",
+      };
+    }
 
     revalidatePath("/dashboard/projects");
     revalidatePath(`/dashboard/projects/${id}`);
     revalidatePath(`/projects/${slug}`);
 
-    return { success: true, data: formattedProject };
+    return { success: true, data: updatedProjectResponse.data };
   } catch (error) {
     console.error("Error updating project:", error);
     return {
@@ -463,13 +517,13 @@ export async function getPublicProjects(limit?: number, type?: string) {
     `;
 
     const params: any[] = [];
-    
+
     // Add WHERE clause if type is specified
     if (type) {
       sql += ` WHERE status = ?`;
       params.push(type);
     }
-    
+
     sql += ` ORDER BY createdAt DESC`;
 
     if (limit) {
@@ -477,12 +531,27 @@ export async function getPublicProjects(limit?: number, type?: string) {
       params.push(limit);
     }
 
-    const projects = await getMany(sql, params);
+    // Get raw data directly
+    const result = await query(sql, params);
 
-    // Ensure proper serialization for client components
-    const serializedProjects = JSON.parse(JSON.stringify(projects));
+    if (!result || !result.rows) {
+      console.log("No projects found or invalid result");
+      return { success: true, data: [] };
+    }
 
-    return { success: true, data: serializedProjects };
+    // Process each project manually to avoid JSON.stringify issues
+    const processedProjects = result.rows.map((project) => {
+      const cleanProject: Record<string, any> = {};
+
+      // Copy all properties manually
+      Object.keys(project).forEach((key) => {
+        cleanProject[key] = project[key];
+      });
+
+      return cleanProject;
+    });
+
+    return { success: true, data: processedProjects };
   } catch (error) {
     console.error("Error fetching public projects:", error);
     return {
@@ -493,20 +562,20 @@ export async function getPublicProjects(limit?: number, type?: string) {
 }
 
 export async function getPublicProjectsPaginated(
-  page = 1, 
-  limit = 12, 
+  page = 1,
+  limit = 12,
   type?: string
 ) {
   try {
     // Count total projects
     let countSql = "SELECT COUNT(*) as count FROM Project";
     const countParams: any[] = [];
-    
+
     if (type) {
       countSql += " WHERE status = ?";
       countParams.push(type);
     }
-    
+
     const countResult = await getOne(countSql, countParams);
     const total = countResult?.count ? Number(countResult.count) : 0;
 
@@ -520,24 +589,49 @@ export async function getPublicProjectsPaginated(
       startingPrice, maxPrice, completion, mainImage, createdAt
       FROM Project
     `;
-    
+
     const params: any[] = [];
-    
+
     if (type) {
       sql += " WHERE status = ?";
       params.push(type);
     }
-    
+
     sql += " ORDER BY createdAt DESC LIMIT ? OFFSET ?";
     params.push(limit, offset);
 
-    const projects = await getMany(sql, params);
-    const serializedProjects = JSON.parse(JSON.stringify(projects));
+    // Get raw data directly
+    const result = await query(sql, params);
+
+    if (!result || !result.rows) {
+      return {
+        success: true,
+        data: {
+          projects: [],
+          total,
+          page,
+          limit,
+          totalPages,
+        },
+      };
+    }
+
+    // Process each project manually
+    const processedProjects = result.rows.map((project) => {
+      const cleanProject: Record<string, any> = {};
+
+      // Copy all properties manually
+      Object.keys(project).forEach((key) => {
+        cleanProject[key] = project[key];
+      });
+
+      return cleanProject;
+    });
 
     return {
       success: true,
       data: {
-        projects: serializedProjects,
+        projects: processedProjects,
         total,
         page,
         limit,

@@ -9,7 +9,8 @@ export async function generateMetadata({
   params: { slug: string; unitSlug: string };
 }): Promise<Metadata> {
   // Get the unit data
-  const unitResponse = await getUnitBySlug(params.slug, params.unitSlug);
+  const { slug, unitSlug } = await params;
+  const unitResponse = await getUnitBySlug(slug, unitSlug);
 
   if (!unitResponse.success || !unitResponse.unit) {
     return constructMetadata({

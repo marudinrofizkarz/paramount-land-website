@@ -10,7 +10,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   // Fetch project data
-  const { slug } = params;
+  const { slug } = await params;
   const projectResponse = await getProjectBySlug(slug);
   const project = projectResponse.success ? projectResponse.data : null;
 
