@@ -41,6 +41,14 @@ interface LocationConfig {
   showContactInfo?: boolean;
   mapHeight?: number;
   className?: string;
+  // Marketing Gallery info (editable)
+  marketingGallery?: {
+    title?: string;
+    address?: string;
+    phone?: string;
+    hours?: string;
+    showGallery?: boolean;
+  };
 }
 
 interface LocationComponentProps {
@@ -571,6 +579,107 @@ export function LocationComponent({
               ))}
             </div>
           </div>
+
+          {/* Marketing Gallery Settings */}
+          <div className="space-y-4">
+            <div className="border-t pt-4">
+              <h4 className="font-semibold mb-4">Marketing Gallery Info</h4>
+
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="checkbox"
+                  id="showGallery"
+                  checked={editConfig.marketingGallery?.showGallery !== false}
+                  onChange={(e) =>
+                    setEditConfig({
+                      ...editConfig,
+                      marketingGallery: {
+                        ...editConfig.marketingGallery,
+                        showGallery: e.target.checked,
+                      },
+                    })
+                  }
+                  className="rounded"
+                />
+                <Label htmlFor="showGallery" className="text-sm">
+                  Show Marketing Gallery
+                </Label>
+              </div>
+
+              {editConfig.marketingGallery?.showGallery !== false && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="galleryTitle">Gallery Title</Label>
+                    <Input
+                      id="galleryTitle"
+                      value={editConfig.marketingGallery?.title || ""}
+                      onChange={(e) =>
+                        setEditConfig({
+                          ...editConfig,
+                          marketingGallery: {
+                            ...editConfig.marketingGallery,
+                            title: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Marketing Gallery"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="galleryPhone">Phone Number</Label>
+                    <Input
+                      id="galleryPhone"
+                      value={editConfig.marketingGallery?.phone || ""}
+                      onChange={(e) =>
+                        setEditConfig({
+                          ...editConfig,
+                          marketingGallery: {
+                            ...editConfig.marketingGallery,
+                            phone: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="+62 821-2345-6789"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="galleryAddress">Address/Info</Label>
+                    <Input
+                      id="galleryAddress"
+                      value={editConfig.marketingGallery?.address || ""}
+                      onChange={(e) =>
+                        setEditConfig({
+                          ...editConfig,
+                          marketingGallery: {
+                            ...editConfig.marketingGallery,
+                            address: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Lokasi Project - Hubungi untuk info lengkap"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="galleryHours">Operating Hours</Label>
+                    <Input
+                      id="galleryHours"
+                      value={editConfig.marketingGallery?.hours || ""}
+                      onChange={(e) =>
+                        setEditConfig({
+                          ...editConfig,
+                          marketingGallery: {
+                            ...editConfig.marketingGallery,
+                            hours: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Senin - Minggu: 09:00 - 17:00"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -599,57 +708,68 @@ export function LocationComponent({
         {config.showMap && <div className="mb-12">{renderMap()}</div>}
 
         {/* Marketing Gallery Office Info */}
-        <div className="text-center">
-          <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-center mb-4">
-              <IconMapPin className="h-6 w-6 text-blue-600 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Marketing Gallery
-              </h3>
+        {config.marketingGallery?.showGallery !== false && (
+          <div className="text-center">
+            <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-center mb-4">
+                <IconMapPin className="h-6 w-6 text-blue-600 mr-2" />
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {config.marketingGallery?.title || "Marketing Gallery"}
+                </h3>
+              </div>
+
+              <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                {config.marketingGallery?.address && (
+                  <div className="flex items-center justify-center gap-2">
+                    <IconMapPin className="h-4 w-4 flex-shrink-0" />
+                    <span>{config.marketingGallery.address}</span>
+                  </div>
+                )}
+
+                {config.marketingGallery?.phone && (
+                  <div className="flex items-center justify-center gap-2">
+                    <IconPhone className="h-4 w-4 flex-shrink-0" />
+                    <a
+                      href={`tel:${config.marketingGallery.phone.replace(
+                        /\s+/g,
+                        ""
+                      )}`}
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                    >
+                      {config.marketingGallery.phone}
+                    </a>
+                  </div>
+                )}
+
+                {config.marketingGallery?.hours && (
+                  <div className="flex items-center justify-center gap-2">
+                    <IconClock className="h-4 w-4 flex-shrink-0" />
+                    <span>{config.marketingGallery.hours}</span>
+                  </div>
+                )}
+              </div>
+
+              <Button
+                className="mt-4 w-full"
+                onClick={() => {
+                  if (
+                    config.locations.length > 0 &&
+                    config.locations[0].coordinates
+                  ) {
+                    const { lat, lng } = config.locations[0].coordinates;
+                    window.open(
+                      `https://maps.google.com/?q=${lat},${lng}`,
+                      "_blank"
+                    );
+                  }
+                }}
+              >
+                <IconNavigation className="h-4 w-4 mr-2" />
+                Lihat di Maps
+              </Button>
             </div>
-
-            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-              <div className="flex items-center justify-center gap-2">
-                <IconMapPin className="h-4 w-4 flex-shrink-0" />
-                <span>Lokasi Project - Hubungi untuk info lengkap</span>
-              </div>
-
-              <div className="flex items-center justify-center gap-2">
-                <IconPhone className="h-4 w-4 flex-shrink-0" />
-                <a
-                  href="tel:+6282123456789"
-                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400"
-                >
-                  +62 821-2345-6789
-                </a>
-              </div>
-
-              <div className="flex items-center justify-center gap-2">
-                <IconClock className="h-4 w-4 flex-shrink-0" />
-                <span>Senin - Minggu: 09:00 - 17:00</span>
-              </div>
-            </div>
-
-            <Button
-              className="mt-4 w-full"
-              onClick={() => {
-                if (
-                  config.locations.length > 0 &&
-                  config.locations[0].coordinates
-                ) {
-                  const { lat, lng } = config.locations[0].coordinates;
-                  window.open(
-                    `https://maps.google.com/?q=${lat},${lng}`,
-                    "_blank"
-                  );
-                }
-              }}
-            >
-              <IconNavigation className="h-4 w-4 mr-2" />
-              Lihat di Maps
-            </Button>
           </div>
-        </div>
+        )}
 
         {/* Edit Button */}
         {editable && (

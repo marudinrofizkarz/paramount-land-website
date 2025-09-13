@@ -122,24 +122,17 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint to list uploaded files (optional)
 export async function GET() {
-  try {
-    return NextResponse.json({
-      message: "Upload endpoint is available",
-      supportedTypes: [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-      ],
-      maxSize: "5MB",
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to get upload info" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({
+    message: "Custom Image Upload API",
+    supportedTypes: [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ],
+    maxSize: "4MB",
+    status: "available",
+  });
 }

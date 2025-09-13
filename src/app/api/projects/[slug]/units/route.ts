@@ -3,10 +3,10 @@ import { getUnitsByProjectId } from "@/lib/unit-actions";
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params;
+    const { slug } = await context.params;
 
     // Get project ID from slug first
     const projectResult = await fetch(`/api/projects/${slug}`);

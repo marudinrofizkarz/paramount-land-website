@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginSchema } from "@/lib/auth";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -30,6 +31,7 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -50,6 +52,9 @@ export function LoginForm() {
       const response = await login(data);
 
       if (response.success) {
+        // Update auth context immediately after successful login
+        await refreshUser();
+
         toast({
           title: "Login berhasil",
           description: "Mengalihkan ke dashboard...",

@@ -80,8 +80,8 @@ export function CTASection({
               </div>
             </div>
 
-            {/* CTA Button */}
-            <div className="flex items-center gap-4 pt-2">
+            {/* CTA Button - Desktop */}
+            <div className="hidden md:flex items-center gap-4 pt-2">
               <Button asChild size="lg" className="group">
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=Halo,%20saya%20tertarik%20dengan%20properti%20ini.%20Bisa%20tolong%20berikan%20informasi%20lebih%20lanjut?`}
@@ -101,6 +101,21 @@ export function CTASection({
                 <a href="tel:+6281387118533">
                   <PhoneCall className="h-4 w-4 mr-2" />
                   081387118533
+                </a>
+              </Button>
+            </div>
+
+            {/* CTA Button - Mobile (Only WhatsApp) */}
+            <div className="md:hidden pt-2">
+              <Button asChild size="lg" className="group w-full">
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=Halo,%20saya%20tertarik%20dengan%20properti%20ini.%20Bisa%20tolong%20berikan%20informasi%20lebih%20lanjut?`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <PhoneCall className="h-4 w-4 mr-2" />
+                  {buttonText}
+                  <ArrowRight className="h-4 w-0 overflow-hidden opacity-0 group-hover:w-4 group-hover:ml-2 group-hover:opacity-100 transition-all duration-300" />
                 </a>
               </Button>
             </div>

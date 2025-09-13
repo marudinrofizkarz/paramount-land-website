@@ -3,12 +3,13 @@ import { resetUserPassword } from "@/lib/auth-server";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  context: { params: Promise<{ token: string }> }
 ) {
+  const { token } = await context.params;
   try {
-    // Get token from URL query parameter
-    const searchParams = request.nextUrl.searchParams;
-    const token = searchParams.get("token");
+    // Token is now from params
+    // const searchParams = request.nextUrl.searchParams;
+    // const token = searchParams.get("token");
 
     if (!token) {
       return NextResponse.json(

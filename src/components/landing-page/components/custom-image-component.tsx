@@ -94,10 +94,29 @@ export function CustomImageComponent({
   const handleImageUpload = async (file: File, type: "desktop" | "mobile") => {
     if (!file) return;
 
+    // Validate file size before upload (4MB limit)
+    const maxSize = 4 * 1024 * 1024; // 4MB
+    if (file.size > maxSize) {
+      toast.error("Ukuran file maksimal 4MB");
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Tipe file tidak didukung. Gunakan JPG, PNG, GIF, atau WebP");
+      return;
+    }
+
     setUploading(true);
 
     try {
-      // First try local upload API
       const formData = new FormData();
       formData.append("file", file);
 
@@ -106,47 +125,60 @@ export function CustomImageComponent({
         body: formData,
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setEditConfig({
           ...editConfig,
           [type === "desktop" ? "desktopImage" : "mobileImage"]: data.url,
         });
+        toast.success("Gambar berhasil diupload!");
         return;
       }
 
-      // If local upload fails, try Cloudinary
+      // Handle API errors with proper error messages
+      if (data.message) {
+        toast.error(data.message);
+      } else if (response.status === 413) {
+        toast.error("Ukuran file terlalu besar. Maksimal 4MB");
+      } else if (response.status === 408) {
+        toast.error("Upload timeout. Coba dengan file yang lebih kecil");
+      } else {
+        toast.error("Gagal mengupload gambar. Silakan coba lagi");
+      }
+
+      // If primary upload fails, try direct Cloudinary as fallback
       const cloudinaryCloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       if (cloudinaryCloudName) {
-        const cloudinaryFormData = new FormData();
-        cloudinaryFormData.append("file", file);
-        cloudinaryFormData.append("upload_preset", "ml_default");
+        try {
+          const cloudinaryFormData = new FormData();
+          cloudinaryFormData.append("file", file);
+          cloudinaryFormData.append("upload_preset", "ml_default");
 
-        const cloudinaryResponse = await fetch(
-          `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`,
-          {
-            method: "POST",
-            body: cloudinaryFormData,
+          const cloudinaryResponse = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`,
+            {
+              method: "POST",
+              body: cloudinaryFormData,
+            }
+          );
+
+          if (cloudinaryResponse.ok) {
+            const cloudinaryData = await cloudinaryResponse.json();
+            setEditConfig({
+              ...editConfig,
+              [type === "desktop" ? "desktopImage" : "mobileImage"]:
+                cloudinaryData.secure_url,
+            });
+            toast.success("Gambar berhasil diupload via Cloudinary!");
+            return;
           }
-        );
-
-        if (cloudinaryResponse.ok) {
-          const cloudinaryData = await cloudinaryResponse.json();
-          setEditConfig({
-            ...editConfig,
-            [type === "desktop" ? "desktopImage" : "mobileImage"]:
-              cloudinaryData.secure_url,
-          });
-          return;
+        } catch (cloudinaryError) {
+          console.error("Cloudinary upload failed:", cloudinaryError);
         }
       }
 
-      // If both fail, use object URL as last resort
-      throw new Error("All upload methods failed");
-    } catch (error: any) {
-      console.error("Upload error:", error);
-
-      // For development, create a data URL as fallback
+      // Last resort: use data URL for development/preview
       const reader = new FileReader();
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string;
@@ -154,10 +186,14 @@ export function CustomImageComponent({
           ...editConfig,
           [type === "desktop" ? "desktopImage" : "mobileImage"]: dataUrl,
         });
+        toast.warning(
+          "Menggunakan preview lokal. Gambar mungkin tidak tersimpan permanen."
+        );
       };
       reader.readAsDataURL(file);
-
-      console.warn("Using local object URL as fallback for development");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("Terjadi kesalahan saat mengupload gambar");
     } finally {
       setUploading(false);
     }

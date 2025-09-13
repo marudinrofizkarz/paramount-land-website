@@ -3,10 +3,10 @@ import { getUnitBySlug } from "@/lib/unit-actions";
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string; unitSlug: string } }
+  context: { params: Promise<{ slug: string; unitSlug: string }> }
 ) {
   try {
-    const { slug, unitSlug } = await params;
+    const { slug, unitSlug } = await context.params;
     const result = await getUnitBySlug(slug, unitSlug);
 
     if (result.success) {

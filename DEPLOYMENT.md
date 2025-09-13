@@ -134,10 +134,63 @@ NEXTAUTH_SECRET=your_random_secret_string
 
 **Solution:** Missing Cloudinary environment variables
 
+## 🛠️ CRITICAL FIX: Image Upload Error
+
+### Problem: "Terjadi Kesalahan - Unexpected token 'R', Request En..."
+
+This error occurs when uploading custom component images on Vercel due to serverless function limitations.
+
+**✅ FIXED in this version:**
+
+- Upload API now uses Cloudinary directly (no filesystem writes)
+- File size limit reduced to 4MB (Vercel-compatible)
+- Better error handling with Indonesian messages
+- Client-side validation before upload
+- Multiple fallback strategies
+
+### Verification After Deployment:
+
+1. **Test Custom Image Upload:**
+
+   - Go to Landing Page Editor
+   - Add Custom Image Component
+   - Try uploading image < 4MB
+   - Should see success message in Indonesian
+
+2. **If Upload Still Fails:**
+
+   ```bash
+   # Check Cloudinary environment variables are set
+   echo $NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+   echo $CLOUDINARY_API_KEY
+   echo $CLOUDINARY_API_SECRET
+   ```
+
+3. **File Size Guidelines:**
+   - ✅ Maximum: 4MB per file
+   - ✅ Optimal: 1-2MB for best performance
+   - ✅ Formats: JPG, PNG, GIF, WebP
+
+### Debug Upload Issues:
+
+1. **Check Vercel Function Logs:**
+
+   - Vercel Dashboard → Functions tab
+   - Look for `/api/upload` errors
+
+2. **Verify in Browser:**
+   - Open Network tab in dev tools
+   - Look for 413 (too large) or 408 (timeout) errors
+   - Check actual API response format
+
+**See `VERCEL_UPLOAD_FIX.md` for detailed technical information.**
+
 ## ✅ Deployment Checklist
 
 - [ ] All environment variables set in Vercel
 - [ ] Database URL is correct format
 - [ ] Clerk keys are for correct environment (test vs production)
-- [ ] Cloudinary credentials are valid
+- [ ] **Cloudinary credentials are valid (CRITICAL for uploads)**
 - [ ] Redeploy after setting environment variables
+- [ ] **Test custom component image upload < 4MB**
+- [ ] **Verify error messages appear in Indonesian**

@@ -23,14 +23,12 @@ async function verifyAuth(request: NextRequest) {
   }
 }
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // POST /api/landing-pages/[id]/publish
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
   try {
     // TODO: Re-enable authentication when Clerk is properly configured
     // const user = await verifyAuth(request);
@@ -39,7 +37,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // }
 
     // Get existing landing page to verify it exists
-    const existing = await LandingPageActions.getById(params.id);
+    const existing = await LandingPageActions.getById(id);
     if (!existing.success) {
       return NextResponse.json(
         { error: "Landing page not found" },
@@ -53,7 +51,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     // }
 
-    const result = await LandingPageActions.publish(params.id);
+    const result = await LandingPageActions.publish(id);
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 500 });
