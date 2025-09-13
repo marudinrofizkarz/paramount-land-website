@@ -95,6 +95,35 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       }
     }
 
+    // Clean and validate content before saving
+    const cleanContent = (content: any[]): any[] => {
+      if (!Array.isArray(content)) return [];
+      
+      return content.map((component: any) => {
+        const cleanedComponent = { ...component };
+        
+        // For custom-image components, validate image URLs
+        if (component.type === "custom-image" && component.config) {
+          const config = { ...component.config };
+          
+          // Remove data URLs as they cause serialization issues
+          if (config.desktopImage && config.desktopImage.startsWith("data:")) {
+            console.warn("Removing data URL from desktopImage before saving");
+            config.desktopImage = "";
+          }
+          
+          if (config.mobileImage && config.mobileImage.startsWith("data:")) {
+            console.warn("Removing data URL from mobileImage before saving");
+            config.mobileImage = "";
+          }
+          
+          cleanedComponent.config = config;
+        }
+        
+        return cleanedComponent;
+      });
+    };
+
     // Prepare update data
     const updateData: any = {};
 
@@ -102,7 +131,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (body.slug !== undefined) updateData.slug = body.slug;
     if (body.description !== undefined)
       updateData.description = body.description;
-    if (body.content !== undefined) updateData.content = body.content;
+    if (body.content !== undefined) {
+      updateData.content = cleanContent(body.content);
+    }
     if (body.meta_title !== undefined) updateData.meta_title = body.meta_title;
     if (body.meta_description !== undefined)
       updateData.meta_description = body.meta_description;
@@ -124,9 +155,23 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (body.settings !== undefined) updateData.settings = body.settings;
     if (body.expires_at !== undefined) updateData.expires_at = body.expires_at;
 
+    // Validate that the data can be serialized before saving
+    try {
+      JSON.stringify(updateData);
+    } catch (serializationError) {
+      console.error("Serialization error:", serializationError);
+      return NextResponse.json(
+        { 
+          error: "Data contains invalid content that cannot be saved. Please check uploaded images and try again." 
+        }, 
+        { status: 400 }
+      );
+    }
+
     const result = await LandingPageActions.update(id, updateData);
 
     if (!result.success) {
+      console.error("Database update failed:", result.error);
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 

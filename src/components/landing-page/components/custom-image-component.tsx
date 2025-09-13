@@ -69,7 +69,30 @@ export function CustomImageComponent({
   const mobileFileRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
-    onUpdate?.(editConfig);
+    // Clean the config before saving
+    const cleanedConfig = { ...editConfig };
+    
+    // Remove any data URLs before saving
+    if (cleanedConfig.desktopImage && cleanedConfig.desktopImage.startsWith("data:")) {
+      toast.error("Desktop image contains temporary data. Please upload the image properly.");
+      return;
+    }
+    
+    if (cleanedConfig.mobileImage && cleanedConfig.mobileImage.startsWith("data:")) {
+      toast.error("Mobile image contains temporary data. Please upload the image properly.");
+      return;
+    }
+    
+    // Validate serialization
+    try {
+      JSON.stringify(cleanedConfig);
+    } catch (error) {
+      console.error("Config serialization error:", error);
+      toast.error("Configuration contains invalid data. Please try again.");
+      return;
+    }
+    
+    onUpdate?.(cleanedConfig);
     setIsEditing(false);
   };
 
@@ -178,19 +201,12 @@ export function CustomImageComponent({
         }
       }
 
-      // Last resort: use data URL for development/preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
-        setEditConfig({
-          ...editConfig,
-          [type === "desktop" ? "desktopImage" : "mobileImage"]: dataUrl,
-        });
-        toast.warning(
-          "Menggunakan preview lokal. Gambar mungkin tidak tersimpan permanen."
-        );
-      };
-      reader.readAsDataURL(file);
+      // Show error message instead of using data URL
+      toast.error(
+        "Gagal mengupload gambar ke server. Silakan coba dengan file yang lebih kecil atau format yang berbeda."
+      );
+      
+      // Don't use data URLs as they cause serialization issues when saving
     } catch (error: any) {
       console.error("Upload error:", error);
       toast.error("Terjadi kesalahan saat mengupload gambar");

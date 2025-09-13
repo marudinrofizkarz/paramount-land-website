@@ -86,7 +86,18 @@ interface LandingPageComponent {
     | "statistics"
     | "video"
     | "timeline"
-    | "location";
+    | "location"
+    | "custom-image"
+    | "copyright"
+    | "footer"
+    | "facilities"
+    | "unit-slider"
+    | "progress-slider"
+    | "bank-partnership"
+    | "agent-contact"
+    | "title-description"
+    | "location-access"
+    | "promo";
   config: any;
   order: number;
 }
@@ -232,6 +243,44 @@ export default function EditLandingPagePage({ params }: EditPageProps) {
     }
   };
 
+  const cleanComponentData = (component: LandingPageComponent): LandingPageComponent => {
+    // Deep clone the component
+    const cleaned = JSON.parse(JSON.stringify(component));
+    
+    // For custom-image components, validate image URLs
+    if (component.type === "custom-image" && component.config) {
+      const config = component.config;
+      
+      // Remove data URLs that are too large (over 1MB)
+      if (config.desktopImage && config.desktopImage.startsWith("data:")) {
+        const sizeInBytes = (config.desktopImage.length * 3) / 4; // Approximate size
+        if (sizeInBytes > 1024 * 1024) { // 1MB limit
+          console.warn("Desktop image data URL too large, removing...");
+          cleaned.config.desktopImage = "";
+        }
+      }
+      
+      if (config.mobileImage && config.mobileImage.startsWith("data:")) {
+        const sizeInBytes = (config.mobileImage.length * 3) / 4;
+        if (sizeInBytes > 1024 * 1024) { // 1MB limit
+          console.warn("Mobile image data URL too large, removing...");
+          cleaned.config.mobileImage = "";
+        }
+      }
+      
+      // Remove any File objects or other non-serializable data
+      Object.keys(cleaned.config).forEach(key => {
+        const value = cleaned.config[key];
+        if (value && typeof value === 'object' && value.constructor && value.constructor.name === 'File') {
+          console.warn(`Removing File object from config.${key}`);
+          delete cleaned.config[key];
+        }
+      });
+    }
+    
+    return cleaned;
+  };
+
   const handleSave = async (status?: "draft" | "published") => {
     if (!title || !slug) {
       await Swal.fire({
@@ -248,11 +297,14 @@ export default function EditLandingPagePage({ params }: EditPageProps) {
 
     setSaving(true);
     try {
+      // Clean component data before saving
+      const cleanedComponents = components.map(cleanComponentData);
+      
       const updateData: any = {
         title,
         slug,
         description,
-        content: components,
+        content: cleanedComponents,
         meta_title: metaTitle,
         meta_description: metaDescription,
         og_image: ogImage,
@@ -282,7 +334,7 @@ export default function EditLandingPagePage({ params }: EditPageProps) {
         console.error("Data serialization error:", serializationError);
         await Swal.fire({
           title: "Data Error",
-          text: "Some uploaded files or data cannot be saved. Please try uploading files again.",
+          text: "Some uploaded files or data cannot be saved. Please ensure all images are properly uploaded to Cloudinary before publishing.",
           icon: "error",
           confirmButtonText: "OK",
         });
