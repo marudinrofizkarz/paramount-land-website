@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { LandingPageBuilder } from "@/components/landing-page/landing-page-builder";
-import { UltraFastLandingPageActions } from "@/lib/ultra-fast-landing-page-actions";
+import { LandingPageActions } from "@/lib/landing-page-actions";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
 
 // Ultra-fast configuration - maximum performance
@@ -18,7 +18,7 @@ interface LandingPageProps {
 // Ultra-fast data fetching with minimal processing
 async function getLandingPageData(slug: string) {
   try {
-    const result = await UltraFastLandingPageActions.getBySlug(slug);
+    const result = await LandingPageActions.getBySlug(slug);
     return result.success ? result.data : null;
   } catch (error) {
     console.error("Error fetching landing page:", error);

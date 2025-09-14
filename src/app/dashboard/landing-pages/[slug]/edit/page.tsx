@@ -243,41 +243,50 @@ export default function EditLandingPagePage({ params }: EditPageProps) {
     }
   };
 
-  const cleanComponentData = (component: LandingPageComponent): LandingPageComponent => {
+  const cleanComponentData = (
+    component: LandingPageComponent
+  ): LandingPageComponent => {
     // Deep clone the component
     const cleaned = JSON.parse(JSON.stringify(component));
-    
+
     // For custom-image components, validate image URLs
     if (component.type === "custom-image" && component.config) {
       const config = component.config;
-      
+
       // Remove data URLs that are too large (over 1MB)
       if (config.desktopImage && config.desktopImage.startsWith("data:")) {
         const sizeInBytes = (config.desktopImage.length * 3) / 4; // Approximate size
-        if (sizeInBytes > 1024 * 1024) { // 1MB limit
+        if (sizeInBytes > 1024 * 1024) {
+          // 1MB limit
           console.warn("Desktop image data URL too large, removing...");
           cleaned.config.desktopImage = "";
         }
       }
-      
+
       if (config.mobileImage && config.mobileImage.startsWith("data:")) {
         const sizeInBytes = (config.mobileImage.length * 3) / 4;
-        if (sizeInBytes > 1024 * 1024) { // 1MB limit
+        if (sizeInBytes > 1024 * 1024) {
+          // 1MB limit
           console.warn("Mobile image data URL too large, removing...");
           cleaned.config.mobileImage = "";
         }
       }
-      
+
       // Remove any File objects or other non-serializable data
-      Object.keys(cleaned.config).forEach(key => {
+      Object.keys(cleaned.config).forEach((key) => {
         const value = cleaned.config[key];
-        if (value && typeof value === 'object' && value.constructor && value.constructor.name === 'File') {
+        if (
+          value &&
+          typeof value === "object" &&
+          value.constructor &&
+          value.constructor.name === "File"
+        ) {
           console.warn(`Removing File object from config.${key}`);
           delete cleaned.config[key];
         }
       });
     }
-    
+
     return cleaned;
   };
 
@@ -299,7 +308,7 @@ export default function EditLandingPagePage({ params }: EditPageProps) {
     try {
       // Clean component data before saving
       const cleanedComponents = components.map(cleanComponentData);
-      
+
       const updateData: any = {
         title,
         slug,

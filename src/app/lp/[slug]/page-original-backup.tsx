@@ -2,12 +2,31 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { LandingPageBuilder } from "@/components/landing-page/landing-page-builder";
-import { UltraFastLandingPageActions } from "@/lib/ultra-fast-landing-page-actions";
+import { LandingPageActions } from "@/lib/landing-page-actions";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
 
-// Ultra-fast configuration - maximum performance
-export const revalidate = 60; // Shorter cache for faster updates
-export const dynamic = "auto";
+// Force dynamic rendering to prevent stale cache on public pages
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+interface LandingPage {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  content: any[];
+  status: "draft" | "published" | "archived";
+  template_type: string;
+  campaign_source?: string;
+  target_audience?: string;
+  meta_title?: string;
+  meta_description?: string;
+  og_image?: string;
+  tracking_code?: string;
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+}
 
 interface LandingPageProps {
   params: {
@@ -15,10 +34,9 @@ interface LandingPageProps {
   };
 }
 
-// Ultra-fast data fetching with minimal processing
 async function getLandingPageData(slug: string) {
   try {
-    const result = await UltraFastLandingPageActions.getBySlug(slug);
+    const result = await LandingPageActions.getBySlug(slug);
     return result.success ? result.data : null;
   } catch (error) {
     console.error("Error fetching landing page:", error);
@@ -26,20 +44,26 @@ async function getLandingPageData(slug: string) {
   }
 }
 
-// Minimal metadata for faster loading
 export async function generateMetadata({
   params,
 }: LandingPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const landingPage = await getLandingPageData(slug);
 
-  // Fast title generation without complex processing
-  const title = `${slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")} | Paramount Land`;
+  if (!landingPage || (landingPage as any).status !== "published") {
+    return {
+      title: "Page Not Found",
+      description: "The requested landing page could not be found.",
+    };
+  }
 
-  const description =
-    "Discover premium residential properties by Paramount Land - Building Homes and People with Heart";
+  const page = landingPage as any;
+  const baseTitle = page.meta_title || page.title;
+  const title = baseTitle.includes("Paramount Land")
+    ? baseTitle
+    : `${baseTitle} | Paramount Land - Building Homes and People with Heart`;
+  const description = page.meta_description || page.description || "";
+  const ogImage = page.og_image;
 
   return {
     title,
@@ -48,24 +72,21 @@ export async function generateMetadata({
       title,
       description,
       type: "website",
-      url: `/lp/${slug}`,
-      images: [
-        {
-          url: "https://res.cloudinary.com/paramount-land/image/upload/c_fill,w_1200,h_630/v1/og-images/paramount-land-og.jpg",
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      url: `/lp/${page.slug}`,
+      ...(ogImage && { images: [{ url: ogImage }] }),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      ...(ogImage && { images: [ogImage] }),
     },
     robots: {
       index: true,
       follow: true,
+    },
+    alternates: {
+      canonical: `/lp/${page.slug}`,
     },
   };
 }

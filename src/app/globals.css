@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import landing page animations */
+@import "../styles/landing-page-animations.css";
+
 @layer base {
   * {
     font-family: var(--font-sans), sans-serif;

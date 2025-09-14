@@ -71,18 +71,28 @@ export function CustomImageComponent({
   const handleSave = () => {
     // Clean the config before saving
     const cleanedConfig = { ...editConfig };
-    
+
     // Remove any data URLs before saving
-    if (cleanedConfig.desktopImage && cleanedConfig.desktopImage.startsWith("data:")) {
-      toast.error("Desktop image contains temporary data. Please upload the image properly.");
+    if (
+      cleanedConfig.desktopImage &&
+      cleanedConfig.desktopImage.startsWith("data:")
+    ) {
+      toast.error(
+        "Desktop image contains temporary data. Please upload the image properly."
+      );
       return;
     }
-    
-    if (cleanedConfig.mobileImage && cleanedConfig.mobileImage.startsWith("data:")) {
-      toast.error("Mobile image contains temporary data. Please upload the image properly.");
+
+    if (
+      cleanedConfig.mobileImage &&
+      cleanedConfig.mobileImage.startsWith("data:")
+    ) {
+      toast.error(
+        "Mobile image contains temporary data. Please upload the image properly."
+      );
       return;
     }
-    
+
     // Validate serialization
     try {
       JSON.stringify(cleanedConfig);
@@ -91,7 +101,7 @@ export function CustomImageComponent({
       toast.error("Configuration contains invalid data. Please try again.");
       return;
     }
-    
+
     onUpdate?.(cleanedConfig);
     setIsEditing(false);
   };
@@ -205,7 +215,7 @@ export function CustomImageComponent({
       toast.error(
         "Gagal mengupload gambar ke server. Silakan coba dengan file yang lebih kecil atau format yang berbeda."
       );
-      
+
       // Don't use data URLs as they cause serialization issues when saving
     } catch (error: any) {
       console.error("Upload error:", error);

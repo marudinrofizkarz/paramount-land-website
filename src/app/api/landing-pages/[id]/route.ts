@@ -98,28 +98,28 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // Clean and validate content before saving
     const cleanContent = (content: any[]): any[] => {
       if (!Array.isArray(content)) return [];
-      
+
       return content.map((component: any) => {
         const cleanedComponent = { ...component };
-        
+
         // For custom-image components, validate image URLs
         if (component.type === "custom-image" && component.config) {
           const config = { ...component.config };
-          
+
           // Remove data URLs as they cause serialization issues
           if (config.desktopImage && config.desktopImage.startsWith("data:")) {
             console.warn("Removing data URL from desktopImage before saving");
             config.desktopImage = "";
           }
-          
+
           if (config.mobileImage && config.mobileImage.startsWith("data:")) {
             console.warn("Removing data URL from mobileImage before saving");
             config.mobileImage = "";
           }
-          
+
           cleanedComponent.config = config;
         }
-        
+
         return cleanedComponent;
       });
     };
@@ -161,9 +161,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     } catch (serializationError) {
       console.error("Serialization error:", serializationError);
       return NextResponse.json(
-        { 
-          error: "Data contains invalid content that cannot be saved. Please check uploaded images and try again." 
-        }, 
+        {
+          error:
+            "Data contains invalid content that cannot be saved. Please check uploaded images and try again.",
+        },
         { status: 400 }
       );
     }

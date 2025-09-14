@@ -118,6 +118,20 @@ export function FormComponent({
         if (typeof window !== "undefined" && (window as any).trackConversion) {
           (window as any).trackConversion();
         }
+
+        // Enhanced Google Ads conversion tracking
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag("event", "conversion", {
+            send_to: "AW-CONVERSION_ID/CONVERSION_LABEL", // Replace with actual conversion ID
+            value: 1.0,
+            currency: "IDR",
+          });
+
+          (window as any).gtag("event", "generate_lead", {
+            currency: "IDR",
+            value: 1.0,
+          });
+        }
       } else {
         showError(result.error || "Failed to submit form. Please try again.");
       }
